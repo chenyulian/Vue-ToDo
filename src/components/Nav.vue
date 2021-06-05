@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <Icon name="align-text-justify" class="align-text-justify" />
+        <Icon name="align-text-justify" class="align-text-justify"/>
         <div class="top_right_button_group">
             <button class="addButton">
                 <span>添加任务</span>
@@ -22,7 +22,6 @@
     
     @Component
     export default class Nav extends Vue{
-        
     }
 </script>
 
