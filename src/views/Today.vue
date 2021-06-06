@@ -4,16 +4,17 @@
         <div class="task_list">
             <ul>
                 <li>
-                    <TaskListItem />
+                    <TaskListItem content = "买菜" />
                 </li>
-                <li><TaskListItem /></li>
-                <li><TaskListItem /></li>
+                <li><TaskListItem content = "做饭" /></li>
+                <li><TaskListItem content = "洗碗"/></li>
             </ul>
         </div>
         <div class="add_task_container">
             <Icon name="plus-circle" class="plus-circle" />
             <div class="add_task_button">添加任务</div> 
         </div>
+        <el-button>默认按钮</el-button>
     </div>
 </template>
 

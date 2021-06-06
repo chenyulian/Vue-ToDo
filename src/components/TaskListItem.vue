@@ -4,7 +4,7 @@
             <div class="check_box_circle">
                 <Icon name="tick" class="tick" />
             </div>
-            <div class="task_content">任务内容</div>
+            <div class="task_content">{{content}}</div>
         </div>
         <hr />
     </div>
@@ -13,10 +13,13 @@
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 
     @Component
     export default class TaskListItem extends Vue{
         
+        @Prop({required: true})
+        content!: string
     }
 </script>
 
