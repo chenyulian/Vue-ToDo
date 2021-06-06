@@ -1,9 +1,11 @@
 <template>
   <div id="app">
     <Nav />
-    <Sidebar :style="isShowSidebar?{'display':'block'}:{'display':'none'}"/>
+    <div class="content_container">
+      <Sidebar :style="isShowSidebar?{'display':'block'}:{'display':'none'}"/>
+      <router-view class="content" />
+    </div>
     
-    <router-view/>
   </div>
 </template>
 
@@ -22,5 +24,14 @@ export default class App extends Vue {
   box-sizing: border-box;
   list-style: none;
   text-decoration: none;
+}
+
+.content_container {
+  display: flex;
+}
+
+.content {
+  width: 100%;
+  padding: 100px 24px;
 }
 </style>

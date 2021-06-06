@@ -66,15 +66,17 @@ nav {
            padding-left: 4px;
            padding-right: 4px;
         }
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 }
 
 .plus-circle {
     width: 24px;
     height: 24px;
-    fill: red;
-    color: red;
-    // margin-left: 4px;
+    fill: #fff;
 }
 
 .bell_container {

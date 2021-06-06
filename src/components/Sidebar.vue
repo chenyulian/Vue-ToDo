@@ -31,9 +31,9 @@
     // border: 1px solid red;
     max-width: 320px;
     min-height: 100vh;
-    position: fixed;
-    left:0;
-    top:0;
+    // position: fixed;
+    // left:0;
+    // top:0;
     -moz-box-shadow:1px 1px 2px #E8E8EA; -webkit-box-shadow:1px 1px 2px #E8E8EA; box-shadow:1px 1px 2px #E8E8EA;
 }
 
