@@ -27,8 +27,8 @@
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/style/common.scss";
 .sidebar {
-    // border: 1px solid red;
     max-width: 320px;
     min-height: 100vh;
     // position: fixed;
@@ -48,18 +48,15 @@
     justify-content: center;
     font-size: 14px;
     border-radius: 12px;
-    color: #1d1929;;
 
     &:hover {
-        background-color:  #e6ecff;
-        // color: #003cff;
+        background-color:  $color-blue-11;
         font-weight: 700;
     }
 }
 
 .xxx {
-    background-color:  #e6ecff;
-    // color: #003cff;
+    background-color:  $color-blue-11;
     font-weight: 700;
 }
 
@@ -70,7 +67,6 @@
     display: flex;
     justify-content: center;
     font-size: 14px;
-    color: #1d1929;
 }
 
 

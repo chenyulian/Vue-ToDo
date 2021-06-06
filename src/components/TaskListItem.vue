@@ -21,6 +21,7 @@
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/style/common.scss";
 .task_list_item {
     width: 100%;
     height: 56px;
@@ -33,8 +34,6 @@
     }
 }
 .task_container {
-    
-    // border: 1px solid #adff2f;
     display: flex;
     align-items: center;
     margin-bottom: 10px;
@@ -43,13 +42,13 @@
 .check_box_circle {
     width: 24px;
     height: 24px;
-    border: 1px solid #003cff;
+    border: 1px solid $color-blue-3;
     background-color: white;
     border-radius: 9px;
     position: relative;
     margin: 4px;
     &:hover {
-        background-color: #003cff;
+        background-color: $color-blue-3;
         .tick {
             display: block;
         }

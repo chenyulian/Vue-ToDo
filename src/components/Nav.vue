@@ -26,6 +26,7 @@
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/style/common.scss";
 nav {
     height: 80px;
     // border: 1px solid red;
@@ -58,7 +59,7 @@ nav {
         justify-content: center;
         align-items: center;
         padding: 14px 4px;
-        background: #003cff;
+        background: $color-blue-3;
         color: white;
         border-radius: 20px;
         font-size: 14px;
