@@ -4,16 +4,17 @@
     <div class="content_container">
       <Sidebar :style="isShowSidebar?{'display':'block'}:{'display':'none'}"/>
       <router-view class="content" />
-    </div>
-    
+    </div>    
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
+import Component from "vue-class-component";
 
+@Component
 export default class App extends Vue {
-  isShowSidebar = true
+  isShowSidebar = true;
 }
 </script>
 
