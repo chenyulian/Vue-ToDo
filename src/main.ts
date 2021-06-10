@@ -7,7 +7,9 @@ import Nav from './components/Nav.vue';
 import Sidebar from './components/Sidebar.vue';
 import Icon from './components/Icon.vue';
 import TaskEditor from './components/TaskEditor.vue';
-import { Button, Dialog, Select, Option, FormItem, Form, Input, Popover, DatePicker, Radio, RadioGroup, Cascader, Switch } from 'element-ui';
+import { Button, Dialog, Select, Option, FormItem, Form, Input, Popover,
+         DatePicker, Radio, RadioGroup, Cascader, Switch, Table, TableColumn,
+         Tooltip } from 'element-ui';
 // import NewTaskDialog from '@/components/NewTaskDialog.vue'
 
 Vue.config.productionTip = false;
@@ -28,6 +30,9 @@ Vue.component(Radio.name, Radio);
 Vue.component(RadioGroup.name, RadioGroup);
 Vue.component(Cascader.name, Cascader);
 Vue.component(Switch.name, Switch);
+Vue.component(Table.name, Table);
+Vue.component(TableColumn.name, TableColumn);
+Vue.component(Tooltip.name, Tooltip);
 // Vue.component('NewTaskDialog', NewTaskDialog);
 
 new Vue({
