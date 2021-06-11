@@ -2,7 +2,13 @@
 <div class="task_editor" :class="isEditing===true?'isEditing':''">
     <div class="task_edit_container" :class="isEditing===true?'isEditing':''">
         <div class="content-container">
-            <el-button v-if="selectedTagName!==''" type="primary" icon="el-icon-price-tag" size="mini">{{selectedTagName}}</el-button>
+            <el-tag 
+                v-if="selectedTagName!==''" 
+                type="primary" size="mini" 
+                class="tag" 
+                closable
+                disable-transitions
+                @close="closeTag">{{selectedTagName}}</el-tag>
             <input type="text" v-model = "task_content" width="100%" placeholder="请输入任务内容，例如：慢跑半小时">
         </div>
         
@@ -62,9 +68,7 @@
                             ref="tags-popover"
                             >
                             <ul class="tags">
-                                <li @click="selectTag">工作</li>
-                                <li @click="selectTag">自我提升</li>
-                                <li @click="selectTag">娱乐</li>
+                                <li v-for="tag in tags" :key="tag.id" @click="selectTag(tag.name)">{{tag.name}}</li>
                             </ul>
                         </el-popover>
                     </li>
@@ -88,7 +92,7 @@
         </el-button>
 
         <el-button type="text" size="medium" class="cancel_button" v-if="isEditing"
-            @click="isEditing = !isEditing">
+            @click="cancel">
             取消
         </el-button>
     </div>
@@ -98,7 +102,9 @@
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
-    import dayjs from 'dayjs'
+    import dayjs from 'dayjs';
+    import Task from '@/lib/Task';
+    import createId from '@/lib/createId';
 
     @Component
     export default class TaskEditor extends Vue{
@@ -112,11 +118,11 @@
         parentProject = "";
         selectedTagName = "";
 
-        task = {
-            content: "",
-            dueDate: new Date(),
-
-        }
+        tags = [
+            {id: 1, name:"工作"},
+            {id: 2, name:"家务"},
+            {id: 3, name:"学习"}
+        ]
 
         get projectFullName():string {
             return this.parentProject === ""?this.project:this.parentProject+" / "+this.project;
@@ -180,7 +186,28 @@
         }];
 
         addTask():void {
-            console.log('add')
+            const task = new Task();
+            task.content = this.task_content;
+            task.id = createId().toString();
+            if(this.projectFullName.indexOf("/") >= 0) {
+                const project = this.projectFullName.split("/")[0].trim();
+                const block = this.projectFullName.split("/")[1].trim();
+                task.project = project;
+                task.block = block;
+            } else {
+                task.project = this.projectFullName;
+            }
+            task.dueDate = this.dueDateString;
+            task.status = 1;
+            task.tags.push(this.selectedTagName);
+
+            console.log('task:');
+            console.dir(task);
+
+            // 保存到LocalStorage
+            const taskList = JSON.parse(localStorage.getItem('task_list') || '[]');
+            taskList.push(task);
+            localStorage.setItem('task_list',JSON.stringify(taskList));
         }
 
         selectProject(row: { project: string; parentProject:string }):void {
@@ -189,9 +216,22 @@
             this.moreVisible = false;
         }
        
-       selectTag(event:MouseEvent):void {
-           const selectedTag = event.target as HTMLLIElement;
-           this.selectedTagName = selectedTag.innerText;
+       selectTag(tagName:string):void {
+           this.selectedTagName = tagName;
+       }
+
+       closeTag():void {
+           this.selectedTagName = "";
+       }
+
+       cancel():void {
+           this.isEditing = !this.isEditing;
+           // 清空数据
+           this.task_content = "";
+           this.dueDate = new Date();
+           this.project = "收集箱";
+           this.parentProject = "";
+           this.selectedTagName = "";
        }
 
     }
@@ -229,6 +269,7 @@
     font-size: 18px;
     height: 36px;
     width: 100%;
+    align-items: center;
     & input {
        height: 100%;
        width: 100%;
@@ -238,6 +279,9 @@
        &::placeholder {
            color: $color-font-occupation;
        }
+    }
+    & .tag {
+        margin-right: 6px;
     }
 }
 
@@ -259,6 +303,10 @@
     }
 }
 
+.task_meta {
+    display: flex;
+    justify-content: space-between;
+}
 .task_meta_quick_settings {
     margin-top: 2px;
 }

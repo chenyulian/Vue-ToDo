@@ -9,7 +9,7 @@ import Icon from './components/Icon.vue';
 import TaskEditor from './components/TaskEditor.vue';
 import { Button, Dialog, Select, Option, FormItem, Form, Input, Popover,
          DatePicker, Radio, RadioGroup, Cascader, Switch, Table, TableColumn,
-         Tooltip } from 'element-ui';
+         Tooltip, Tag} from 'element-ui';
 // import NewTaskDialog from '@/components/NewTaskDialog.vue'
 
 Vue.config.productionTip = false;
@@ -33,6 +33,7 @@ Vue.component(Switch.name, Switch);
 Vue.component(Table.name, Table);
 Vue.component(TableColumn.name, TableColumn);
 Vue.component(Tooltip.name, Tooltip);
+Vue.component(Tag.name, Tag);
 // Vue.component('NewTaskDialog', NewTaskDialog);
 
 new Vue({
