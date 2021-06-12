@@ -18,6 +18,7 @@
     import Component from "vue-class-component";
     import TaskListItem from "@/components/TaskListItem.vue";
     import dayjs from 'dayjs';
+    import Task from '@/lib/Task';
 
     @Component({
         components: {TaskListItem}
@@ -25,8 +26,16 @@
     export default class Today extends Vue{
         todayString = dayjs(new Date()).format("YYYY-MM-DD");
 
-        // 从localStorage获取taskList
-        task_list = JSON.parse(localStorage.getItem("task_list") || "[]");
+        get task_list():Task[] {
+            return this.$store.state.todayTaskList;
+        }
+
+        created():void {
+            console.log('created');
+            this.$store.commit('fetchTodayTaskList');
+            console.log('today task list : ');
+            console.log(this.$store.state.todayTaskList);
+        }
     }
 </script>
 

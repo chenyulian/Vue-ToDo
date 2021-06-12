@@ -38,6 +38,7 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Prop } from "vue-property-decorator";
+    import dayjs from "dayjs";
 
     @Component
     export default class TaskListItem extends Vue{
@@ -54,8 +55,18 @@
         }
         
         get taskDueDate():string {
-            console.log(this.task.dueDate);
-            return this.task.dueDate === null?'':this.task.dueDate;
+            if(this.task.dueDate === null) return "";
+
+            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()),'day')){
+                return "今天";
+            }
+            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()).add(1,'day'),'day')){
+                return "明天";
+            }
+            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()).add(2,'day'),'day')){
+                return "后天";
+            }
+            return dayjs(this.task.dueDate).format("MM-DD");
         }
 
     }

@@ -197,7 +197,7 @@
             } else {
                 task.project = this.projectFullName;
             }
-            task.dueDate = this.dueDateString;
+            task.dueDate = this.dueDate.toString();
             task.status = 1;
             task.tags.push(this.selectedTagName);
 
@@ -205,10 +205,11 @@
             console.dir(task);
 
             // 保存到LocalStorage
-            const taskList = JSON.parse(localStorage.getItem('task_list') || '[]');
-            taskList.push(task);
-            localStorage.setItem('task_list',JSON.stringify(taskList));
-
+            // const taskList = JSON.parse(localStorage.getItem('task_list') || '[]');
+            // taskList.push(task);
+            // localStorage.setItem('task_list',JSON.stringify(taskList));
+            
+            this.$store.commit('addTask', task);
             // 完成后不显示任务编辑
             this.isEditing = false;
         }
