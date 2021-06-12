@@ -208,6 +208,9 @@
             const taskList = JSON.parse(localStorage.getItem('task_list') || '[]');
             taskList.push(task);
             localStorage.setItem('task_list',JSON.stringify(taskList));
+
+            // 完成后不显示任务编辑
+            this.isEditing = false;
         }
 
         selectProject(row: { project: string; parentProject:string }):void {
