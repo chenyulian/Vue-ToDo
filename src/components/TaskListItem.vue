@@ -1,6 +1,6 @@
 <template>
     <div class="task_list_item">
-        <div class="check_box_circle">
+        <div class="check_box_circle" @click="finishTask(task.id)">
             <Icon name="tick" class="tick" />
         </div>
         <div class="task">
@@ -16,7 +16,7 @@
                         <ul class="operation_list">
                             <li>
                                 <i class="el-icon-delete"></i>
-                                <div>删除任务</div> 
+                                <div @click="deleteTask(task.id)">删除任务</div> 
                             </li>
                         </ul>
                     </el-popover>
@@ -67,6 +67,14 @@
                 return "后天";
             }
             return dayjs(this.task.dueDate).format("MM-DD");
+        }
+
+        deleteTask(id:string):void {
+            this.$store.commit("deleteTask",id);
+        }
+
+        finishTask(id:string):void {
+            this.$store.commit("finishTask",id);
         }
 
     }
