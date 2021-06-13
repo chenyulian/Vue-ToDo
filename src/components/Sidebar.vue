@@ -2,8 +2,8 @@
     <div class="sidebar">
         <div class="list_holder">
             <ul class="list">
-                <li><sidebar-list-item link="/today" linkText="今日" /></li>
-                <li><sidebar-list-item link="/calender" linkText="日历" /></li>
+                <li><sidebar-list-item link="/today" linkText="今日" elIconClassName="date" /></li>
+                <li><sidebar-list-item link="/calender" linkText="日历" elIconClassName="date" /></li>
             </ul>
             <div class="projects_container">
                 <div class="list_title">
@@ -12,7 +12,10 @@
                 </div>
                 <ul class="list">
                     <li v-for="project in projectList" :key="project.id">
-                        <sidebar-list-item :link="'/projects/' + project.id" :linkText="project.name" />
+                        <sidebar-list-item 
+                        :link="'/projects/' + project.id" 
+                        :linkText="project.name" 
+                        :projectColor="project.color"/>
                     </li>
                 </ul>
             </div>
