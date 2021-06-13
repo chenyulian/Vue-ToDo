@@ -2,14 +2,18 @@
     <div class="sidebar">
         <div class="list_holder">
             <ul class="list">
-                <li><router-link to="/today" active-class="xxx">今日</router-link></li>
-                <li><router-link to="/calender" active-class="xxx">日历</router-link></li>
+                <li><sidebar-list-item link="/today" linkText="今日" /></li>
+                <li><sidebar-list-item link="/calender" linkText="日历" /></li>
             </ul>
             <div class="projects_container">
-                <div class="list_title">项目</div>
+                <div class="list_title">
+                    <div>项目</div>
+                    <div class="add_project_button" @click="addProject"><i class="el-icon-circle-plus-outline"></i></div>
+                </div>
                 <ul class="list">
-                    <li><router-link to="/projects/1" active-class="xxx">做一桌子菜</router-link></li>
-                    <li><router-link to="/projects/2" active-class="xxx">创建计划</router-link></li>
+                    <li v-for="project in projectList" :key="project.id">
+                        <sidebar-list-item :link="'/projects/' + project.id" :linkText="project.name" />
+                    </li>
                 </ul>
             </div>
         </div>
@@ -18,11 +22,30 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { Component } from "vue-property-decorator";
+    import { Component, Prop } from "vue-property-decorator";
+    import SidebarListItem from "@/components/SidebarListItem.vue";
+    import Project from "@/lib/Project";
     
-    @Component
+    @Component({
+        components: {SidebarListItem}
+    })
     export default class Sidebar extends Vue{
+
+       get projectList():Project[] {
+           return this.$store.state.projectList;
+       }
        
+        @Prop({type:Boolean,required:true})
+        addProjectDialogVisible!:boolean;
+
+       created():void {
+           this.$store.commit("fetchProjectList");
+       }
+
+       addProject():void {
+           console.log('add project');
+           this.$emit("update:addProjectDialogVisible", true);
+       }
     }
 </script>
 
@@ -41,32 +64,22 @@
     padding: 120px 8px;
 }
 
-.list > li > a{
-    width: 272px;
-    padding: 8px;
-    display: flex;
-    justify-content: center;
-    font-size: 14px;
-    border-radius: 12px;
-
-    &:hover {
-        background-color:  $color-blue-11;
-        font-weight: 700;
-    }
-}
-
-.xxx {
-    background-color:  $color-blue-11;
-    font-weight: 700;
-}
-
-
 .list_title {
     width: 272px;
-    padding: 8px;
+    padding: 8px 48px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     font-size: 14px;
+    font-weight: 700;
+
+    & .add_project_button{
+        padding: 0 2px;
+        &:hover{
+            cursor: pointer;
+            color:#409EFF;
+        }
+    }
 }
 
 

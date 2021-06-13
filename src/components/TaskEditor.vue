@@ -188,7 +188,7 @@
         addTask():void {
             const task = new Task();
             task.content = this.task_content;
-            task.id = createId().toString();
+            task.id = createId("task").toString();
             if(this.projectFullName.indexOf("/") >= 0) {
                 const project = this.projectFullName.split("/")[0].trim();
                 const block = this.projectFullName.split("/")[1].trim();

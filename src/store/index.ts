@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import dayjs from 'dayjs'
 import Task from '@/lib/Task'
 import { RootState } from '@/custom'
+import Project from '@/lib/Project'
 
 // let customParseFormat = require('dayjs/plugin/customParseFormat')
 // dayjs.extend(customParseFormat)
@@ -11,7 +12,8 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    todayTaskList: []
+    todayTaskList: [],
+    projectList: []
   } as RootState,
   mutations: {
     fetchTodayTaskList(state) {
@@ -61,6 +63,20 @@ const store = new Vuex.Store({
       task.status = 2;
       localStorage.setItem("task_list",JSON.stringify(tasks));
       store.commit("fetchTodayTaskList");
+    },
+
+    fetchProjectList(state) {
+      const projects = JSON.parse(localStorage.getItem("project_list") || '[]');
+      state.projectList =  projects.filter((project:Project)=>{
+        return project.status === 1;
+      });
+    },
+
+    addNewProjct(state, project:Project) {
+      const projects = JSON.parse(localStorage.getItem("project_list") || '[]');
+      projects.push(project);
+      localStorage.setItem("project_list",JSON.stringify(projects));
+      store.commit("fetchProjectList");
     }
   },
   actions: {
