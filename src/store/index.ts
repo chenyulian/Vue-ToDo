@@ -35,7 +35,20 @@ const store = new Vuex.Store({
       localStorage.setItem("task_list",JSON.stringify(tasks));
       store.commit("fetchTodayTaskList");
       // state.todayTaskList.push(task);
-    }
+    },
+
+    deleteTask(state, id:string) {
+      const tasks = JSON.parse(localStorage.getItem("task_list") || '[]');
+      if(tasks === []) {
+        throw new Error('empty task list');
+      }
+      const index = tasks.findIndex((task:Task)=>{
+        return task.id === id;
+      })
+      tasks.splice(index, 1);
+      localStorage.setItem("task_list",JSON.stringify(tasks));
+      store.commit("fetchTodayTaskList");
+    },
   },
   actions: {
   },
