@@ -13,7 +13,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     todayTaskList: [],
-    projectList: []
+    projectList: [],
+    blockList: []
   } as RootState,
   mutations: {
     fetchTodayTaskList(state) {
@@ -36,7 +37,6 @@ const store = new Vuex.Store({
       tasks.push(task);
       localStorage.setItem("task_list",JSON.stringify(tasks));
       store.commit("fetchTodayTaskList");
-      // state.todayTaskList.push(task);
     },
 
     deleteTask(state, id:string) {

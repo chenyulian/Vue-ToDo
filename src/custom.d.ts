@@ -16,8 +16,10 @@
 
 import Task from "./lib/Task";
 import Project from "./lib/Project";
+import Block from "./lib/Block";
 
 type RootState = {
    todayTaskList: Task[],
-   projectList: Project[]
+   projectList: Project[],
+   blockList: Block[]
 }

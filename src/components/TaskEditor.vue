@@ -15,7 +15,7 @@
         <div class="task_meta">
             <div class="task_meta_main">
                 <el-button plain size="mini" v-popover:date-popover icon="el-icon-date">{{dueDateString}}</el-button>
-                <el-tooltip class="item" effect="dark" content="选择一个项目" placement="bottom">
+                <el-tooltip class="item" effect="dark" content="选择一个项目" placement="right">
                     <el-button plain size="mini" v-popover:section-popover icon="el-icon-receiving">{{projectFullName}}</el-button>
                 </el-tooltip>
                 <el-popover
@@ -36,21 +36,19 @@
                     ref="section-popover"
                     v-model="moreVisible"
                     >
-                    <el-table
-                        :data="tableData"
-                        style="width: 100%;margin-bottom: 20px;"
-                        row-key="id"
-                        border
-                        default-expand-all
-                        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-                        @row-click="selectProject">
-                        <el-table-column
-                        prop="project"
-                        label="项目"
-                        sortable
-                        width="180">
-                        </el-table-column>
-                    </el-table>
+                    <ul class="projectList">
+                        <li v-for="project in projectList" :key="project.id" @click="selectProject(project)">
+                            <div class="project_container">
+                                <div :style="{backgroundColor:project.color}"></div>
+                                <span>{{project.name}}</span>
+                            </div>
+                            <ul v-if="project.blocks.length > 0" class="blockList">
+                                <li v-for="block in project.blocks" :key="block.id" @click.stop="selectBlock(block, project.name)">
+                                    {{block.name}}
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </el-popover>
             </div>
            
@@ -105,6 +103,8 @@
     import dayjs from 'dayjs';
     import Task from '@/lib/Task';
     import createId from '@/lib/createId';
+    import Project from "@/lib/Project";
+    import Block from "@/lib/Block";
 
     @Component
     export default class TaskEditor extends Vue{
@@ -113,7 +113,6 @@
         visible = false;
         moreVisible = false;
         isEditing = false;
-        addButtonDisabled = true;
         project = "收集箱";
         parentProject = "";
         selectedTagName = "";
@@ -123,6 +122,10 @@
             {id: 2, name:"家务"},
             {id: 3, name:"学习"}
         ]
+
+        created():void {
+            this.$store.commit("fetchProjectList");
+        }
 
         get projectFullName():string {
             return this.parentProject === ""?this.project:this.parentProject+" / "+this.project;
@@ -143,47 +146,9 @@
             return this.task_content.length <= 0;
         }
 
-        tableData = [{
-          id: 1,
-          project: '健身',
-          parentProject: '',
-          children: [
-              {
-                  id: 2,
-                  project: '跑步',
-                  parentProject: '健身'
-              },
-               {
-                  id: 3,
-                  project: '游泳',
-                  parentProject: '健身'
-              },
-
-          ]
-        }, {
-          id: 4,
-          project: '画画',
-          parentProject: '',
-        }, {
-          id: 5,
-          project: '阅读',
-          parentProject: '',
-          children: [{
-              id: 51,
-              project: '钢铁是怎样炼成的',
-              parentProject: '阅读',
-            }, {
-              id: 52,
-              project: '战争与和平',
-              parentProject: '阅读',
-            },
-            {
-              id: 53,
-              project: '活着',
-              parentProject: '阅读',
-            },
-          ]
-        }];
+        get projectList():Project[] {
+            return this.$store.state.projectList;
+        }
 
         addTask():void {
             const task = new Task();
@@ -200,23 +165,20 @@
             task.dueDate = this.dueDate.toString();
             task.status = 1;
             task.tags.push(this.selectedTagName);
-
-            console.log('task:');
-            console.dir(task);
-
-            // 保存到LocalStorage
-            // const taskList = JSON.parse(localStorage.getItem('task_list') || '[]');
-            // taskList.push(task);
-            // localStorage.setItem('task_list',JSON.stringify(taskList));
-            
             this.$store.commit('addTask', task);
             // 完成后不显示任务编辑
             this.isEditing = false;
         }
 
-        selectProject(row: { project: string; parentProject:string }):void {
-            this.project = row.project;
-            this.parentProject = row.parentProject;
+        selectProject(project: Project):void {
+            this.project = project.name;
+            this.parentProject = "";
+            this.moreVisible = false;
+        }
+
+        selectBlock(block:Block, projectName: string):void{
+            this.project = block.name;
+            this.parentProject = projectName;
             this.moreVisible = false;
         }
        
@@ -315,7 +277,6 @@
     margin-top: 2px;
 }
 .task_meta_quick_settings > ul  {
-    // display: flex;
     &>li{
         font-size: 20px;
         padding: 0;
@@ -323,13 +284,52 @@
 }
 
 .tags {
-    &>li{
-        // border: 1px solid red;
+    & > li{
         line-height: 32px;
         text-align:center;
         &:hover{
             background:rgb(236,245,255);
             cursor: pointer;
+        }
+    }
+}
+
+.projectList {
+    padding: 8px;
+    & > li {
+        display: flex;
+        flex-direction: column;
+        & .blockList > li, & .project_container {
+            padding: 8px 16px;
+            max-width: 256px;
+            display: flex;
+            align-items: center;
+            &:hover{
+                background:rgb(236,245,255);
+                cursor: pointer;
+            }
+        }
+
+        & .blockList > li {
+            font-size: 12px;
+            padding-left: 36px;
+        }
+
+    }
+    & > li .project_container {
+        justify-content: flex-start;
+        & > div:first-child {
+            min-width: 10px;
+            height: 10px;
+            border-radius: 8px;
+        }
+        & > span {
+            line-height: 16px;
+            margin-left: 6px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     }
 }

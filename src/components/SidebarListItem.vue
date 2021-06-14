@@ -1,5 +1,5 @@
 <template>
-        <el-tooltip class="item" effect="dark" :content="linkText" placement="bottom" open-delay="1000">
+        <el-tooltip class="item" effect="dark" :content="linkText" placement="bottom" :open-delay="1000">
             <div>
                 <router-link 
                 :to="link"
