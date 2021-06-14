@@ -3,6 +3,7 @@
         title="添加项目"
         :visible.sync="visible"
         width="30%"
+        :before-close="handleClose"
         >
         <el-form>
           <el-form-item label="项目名称">
@@ -36,7 +37,11 @@
         submitNewProject():void {
             this.project.id = createId("project").toString();
             this.$store.commit("addNewProjct", this.project);
-            this.$emit('update:visible',false)
+            this.$emit('update:visible',false);
+        }
+
+        handleClose():void {
+            this.$emit('update:visible',false);
         }
     }
 </script>

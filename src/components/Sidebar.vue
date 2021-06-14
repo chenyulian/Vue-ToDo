@@ -46,7 +46,6 @@
        }
 
        addProject():void {
-           console.log('add project');
            this.$emit("update:addProjectDialogVisible", true);
        }
     }
