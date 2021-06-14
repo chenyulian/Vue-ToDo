@@ -77,6 +77,32 @@ const store = new Vuex.Store({
       projects.push(project);
       localStorage.setItem("project_list",JSON.stringify(projects));
       store.commit("fetchProjectList");
+    },
+    deleteProject(state, id:string) {
+       // 删除任务
+       console.log("id"+id)
+       const project = state.projectList.find((item)=>{
+         return item.id === id;
+       });
+       console.log("project:" + project)
+       
+       const tasks = JSON.parse(localStorage.getItem("task_list") || '[]') as Task[];
+       const newTasks = tasks.filter((task)=>{
+         console.log("task.project:" + task.project)
+         console.log("project?.name" + project?.name)
+         return task.project !== project?.name;
+       })
+ 
+       console.log(newTasks);
+       localStorage.setItem("task_list",JSON.stringify(newTasks));
+       store.commit("fetchTodayTaskList");
+
+      // 删除project
+      store.commit("fetchProjectList");
+      const projectIndex = state.projectList.findIndex(i => i.id === id);
+      state.projectList.splice(projectIndex, 1);
+      localStorage.setItem("project_list",JSON.stringify(state.projectList));
+
     }
   },
   actions: {

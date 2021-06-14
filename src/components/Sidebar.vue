@@ -15,7 +15,8 @@
                         <sidebar-list-item 
                         :link="'/projects/' + project.id" 
                         :linkText="project.name" 
-                        :projectColor="project.color"/>
+                        :projectColor="project.color"
+                        :projectId="project.id" />
                     </li>
                 </ul>
             </div>
