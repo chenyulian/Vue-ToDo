@@ -56,6 +56,7 @@
 
         deleteProject(id:string):void {
             this.$store.commit("deleteProject", id);
+            this.$router.push("/today");
         }
     }
 </script>
