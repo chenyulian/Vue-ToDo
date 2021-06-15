@@ -4,6 +4,8 @@ import dayjs from 'dayjs'
 import Task from '@/lib/Task'
 import { RootState } from '@/custom'
 import Project from '@/lib/Project'
+import Block from '@/lib/Block'
+import createId from '@/lib/createId'
 
 // let customParseFormat = require('dayjs/plugin/customParseFormat')
 // dayjs.extend(customParseFormat)
@@ -84,7 +86,7 @@ const store = new Vuex.Store({
       store.commit("saveProjectList",state.projectList);
       store.commit("fetchProjectList");
     },
-    
+
     deleteProject(state, id:string) {
        // 删除任务
        const project = state.projectList.find((item)=>{
@@ -104,7 +106,18 @@ const store = new Vuex.Store({
       const projectIndex = state.projectList.findIndex(i => i.id === id);
       state.projectList.splice(projectIndex, 1);
       store.commit("saveProjectList",state.projectList);
-    }
+    },
+    addBlock(state, payload:{projectId:string,blockName:string}) {
+      store.commit("fetchProjectList");
+      const newBlock = new Block();
+      const {projectId, blockName} = payload;
+      newBlock.name = blockName;
+      newBlock.id = createId("block").toString();
+      const project = state.projectList.find((item)=>{return item.id === projectId});
+      project?.blocks.push(newBlock);
+      store.commit("saveProjectList", state.projectList);
+      store.commit("fetchProjectList");
+    } 
   },
   actions: {
   },
