@@ -117,7 +117,20 @@ const store = new Vuex.Store({
       project?.blocks.push(newBlock);
       store.commit("saveProjectList", state.projectList);
       store.commit("fetchProjectList");
-    } 
+    },
+    deleteBlock(state, payload:{blockName:string, projectId:string}){
+      const project = state.projectList.find(i => i.id === payload.projectId);
+      project?.blocks.splice(project!.blocks.findIndex(i => i.name === payload.blockName), 1);
+      store.commit('saveProjectList', state.projectList);
+    },
+    deleteTaskByBlock(state, payload:{projectName:string,blockName:string}) {
+      state.taskList = state.taskList.filter((task)=>{
+       return !(task.project === payload.projectName && task.block === payload.blockName);
+      });
+     
+      store.commit('saveTaskList', state.taskList);
+
+    }
   },
   actions: {
   },

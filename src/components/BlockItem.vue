@@ -1,23 +1,37 @@
 <template>
     <div class="block_item">
-        <div class="title" v-if="blockName !== ''">
-            <div @click="showTasks = !showTasks" :class="showTasks?'':'hideList'">
-                <i class="el-icon-arrow-down"></i>
+        <Icon name="drag" class="icon-drag" v-popover:popover :style="blockName===''?'visibility:hidden':''" />
+        <el-popover
+            placement="bottom"
+            width="200"
+            trigger="click"
+            ref="popover"
+           >
+           <ul class="operate_items">
+               <li @click="$emit('delete', blockName)">
+                   删除模块
+               </li>
+           </ul>
+        </el-popover>
+        <div class="block">
+            <div class="title" v-if="blockName !== ''">
+                <div @click="showTasks = !showTasks" :class="showTasks?'':'hideList'">
+                    <i class="el-icon-arrow-down"></i>
+                </div>
+                <div>{{blockName}}</div>
             </div>
-            <div>{{blockName}}</div>
-        </div>
-        <transition name="fade">
-            <div class="task_list" v-if="showTasks">
-                <ul>
-                    <li v-for="task in taskList" :key="task.id">
-                        <TaskListItem :task = "task" />
-                        <hr />
-                    </li>
-                </ul>
-                <task-editor v-if="showTasks" /> 
-            </div>
-         </transition>
-            
+            <transition name="fade">
+                <div class="task_list" v-if="showTasks">
+                    <ul>
+                        <li v-for="task in taskList" :key="task.id">
+                            <TaskListItem :task = "task" />
+                            <hr />
+                        </li>
+                    </ul>
+                    <task-editor v-if="showTasks" /> 
+                </div>
+            </transition>
+         </div>
        
     </div>
 </template>
@@ -40,6 +54,8 @@
         @Prop({type:Array, required:true})
         taskList?:Task[];
 
+        showPopover=false;
+
         showTasks = true;
     }
 </script>
@@ -47,6 +63,17 @@
 <style lang="scss" scoped>
 
 @import "~@/assets/style/common.scss";
+.block_item {
+    display: flex;
+    &:hover {
+        & .icon-drag {
+            visibility: visible;
+        }
+    }
+    & .block {
+        flex-grow: 1;
+    }
+}
 .task_list > ul > li hr {
     border:0;
     background-color: $color-border-3;;
@@ -80,5 +107,26 @@
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+
+.icon-drag {
+    width:28px;
+    height: 28px;
+    visibility: hidden;
+    &:hover{
+        cursor: pointer;
+    }
+}
+
+.operate_items {
+    & > li{
+        line-height: 32px;
+        text-align:center;
+        &:hover{
+            background:rgb(236,245,255);
+            cursor: pointer;
+        }
+    }
+}
+
 
 </style>

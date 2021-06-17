@@ -1,9 +1,9 @@
 <template>
     <div class="projectPage">
-        <h2>{{project.name}}</h2>
-        <ul>
+        <h1>{{project.name}}</h1>
+        <ul class="blockList">
            <li v-for="(item, key) in tasks" :key="key">
-                 <block-item :blockName="item[0]" :taskList="item[1]"/>
+                <block-item :blockName="item[0]" :taskList="item[1]" class="blockItem" :showPopover="false" @delete="deleteBlock"/>
             </li>
         </ul>
         <div class="addBlockEditor" v-if="blockEditorVisible">
@@ -14,6 +14,7 @@
         <div class="add_block_divider_container" @click="blockEditorVisible = true" v-if="!blockEditorVisible">
             <el-divider content-position="center" class="divider">添加模块</el-divider>
         </div>
+        
     </div>
 </template>
 
@@ -33,6 +34,8 @@
         blockEditorVisible = false;
 
         newBlockName = "";
+
+        zxz=false;
 
         get projectId():string{
             return this.$route.params.id;
@@ -80,6 +83,11 @@
             // 清空输入框数据
             this.newBlockName = "";
         }
+
+        deleteBlock(blockName:string):void {
+            this.$store.commit("deleteBlock",{projectId:this.projectId, blockName:blockName});
+            this.$store.commit("deleteTaskByBlock",{projectName:this.project.name,blockName:blockName})
+        }
     }
 </script>
 
@@ -105,6 +113,19 @@
        }
        cursor: pointer;
    }
+}
+
+.blockList > li{
+    display: flex;
+    &:hover {
+        .icon-drag {
+            visibility: visible;
+            cursor: pointer;
+        }
+    }
+    & .blockItem {
+        flex-grow: 1;
+    }
 }
 
 </style>
