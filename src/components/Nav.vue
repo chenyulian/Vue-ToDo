@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <Icon name="align-text-justify" class="align-text-justify"/>
+        <Icon name="align-text-justify" class="align-text-justify" @click="$emit('toggleSidebar')"/>
         <div class="top_right_button_group">
             <button class="addButton">
                 <span>添加任务</span>
@@ -42,6 +42,9 @@ nav {
     width: 32px;
     height: 32px;
     margin: 24px;
+    &:hover {
+        cursor: pointer;
+    }
 }
 .top_right_button_group {
     margin-right: 24px;

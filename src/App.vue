@@ -1,9 +1,12 @@
 <template>
   <div id="app">
-    <Nav />
+    <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" />
     <div class="content_container">
-      <Sidebar :style="isShowSidebar?{'display':'block'}:{'display':'none'}"
+      <transition name="slide-fade">
+        <Sidebar v-if="isShowSidebar"
                :addProjectDialogVisible.sync="addProjectDialogVisible"/>
+      </transition>
+      
       <router-view class="content" />
 
       <!-- dialogs -->
@@ -48,5 +51,15 @@ export default class App extends Vue {
 .content {
   width: 100%;
   padding: 100px 24px;
+}
+
+.slide-fade-enter-active {
+  transition: all .3s ease
+}
+.slide-fade-leave-active {
+  transition: all .3s ease
+}
+.slide-fade-enter, .slide-fade-leave-to{
+  transform: translateX(-320px);
 }
 </style>
