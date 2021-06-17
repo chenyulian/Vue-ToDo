@@ -16,7 +16,14 @@
             <div class="task_meta_main">
                 <el-button plain size="mini" v-popover:date-popover icon="el-icon-date">{{dueDateString}}</el-button>
                 <el-tooltip class="item" effect="dark" content="选择一个项目" placement="right">
-                    <el-button plain size="mini" v-popover:section-popover icon="el-icon-receiving">{{projectFullName}}</el-button>
+                    <el-button plain size="mini" v-popover:section-popover>
+                        <div v-if="projectColor !== ''" 
+                            style="width: 8px; height: 8px; border-radius: 6px; display:inline-block; margin-right: 8px;" 
+                            :style="`backgroundColor:${projectColor}`">
+                        </div>
+                        <i v-else class="el-icon-receiving"></i>
+                        <span>{{projectFullName}}</span>
+                    </el-button>
                 </el-tooltip>
                 <el-popover
                     placement="bottom"
@@ -37,13 +44,14 @@
                     v-model="moreVisible"
                     >
                     <ul class="projectList">
+                        <li class="collectBox" @click="selectProject({name: '收集箱'})"><i class="el-icon-receiving"></i><span style="margin-left:4px;">收集箱</span></li>
                         <li v-for="project in projectList" :key="project.id" @click="selectProject(project)">
                             <div class="project_container">
                                 <div :style="{backgroundColor:project.color}"></div>
                                 <span>{{project.name}}</span>
                             </div>
                             <ul v-if="project.blocks.length > 0" class="blockList">
-                                <li v-for="block in project.blocks" :key="block.id" @click.stop="selectBlock(block, project.name)">
+                                <li v-for="block in project.blocks" :key="block.id" @click.stop="selectBlock(block, project.name, project.color)">
                                     {{block.name}}
                                 </li>
                             </ul>
@@ -83,11 +91,10 @@
             添加任务
         </el-button>
 
-        <el-button type="text" size="medium" class="add_button" v-else
-            @click="isEditing = !isEditing">
-            <i class="el-icon-circle-plus"></i>
-            添加任务
-        </el-button>
+        <div class="addButtonText" v-else @click="isEditing = !isEditing">
+            <Icon name="add" class="icon-add" />
+            <span>添加任务</span>
+        </div>
 
         <el-button type="text" size="medium" class="cancel_button" v-if="isEditing"
             @click="cancel">
@@ -116,6 +123,7 @@
         project = "收集箱";
         parentProject = "";
         selectedTagName = "";
+        projectColor = "";
 
         tags = [
             {id: 1, name:"工作"},
@@ -130,6 +138,7 @@
         get projectFullName():string {
             return this.parentProject === ""?this.project:this.parentProject+" / "+this.project;
         }
+        
         get dueDateString():string {            
             if(dayjs(this.dueDate).isSame(dayjs(new Date()),'day')){
                 return "今天";
@@ -172,14 +181,18 @@
 
         selectProject(project: Project):void {
             this.project = project.name;
+            this.projectColor = project.color || "";
+           
             this.parentProject = "";
             this.moreVisible = false;
+            
         }
 
-        selectBlock(block:Block, projectName: string):void{
+        selectBlock(block:Block, projectName: string, color:string):void{
             this.project = block.name;
             this.parentProject = projectName;
             this.moreVisible = false;
+            this.projectColor = color;
         }
        
        selectTag(tagName:string):void {
@@ -262,10 +275,10 @@
     margin: 0;
     &:hover {
         cursor: pointer;
-        color:#409EFF;
+        color:$color-theme;
     }
     &:focus {
-        color:#409EFF;
+        color:$color-theme;
     }
 }
 
@@ -299,7 +312,7 @@
     & > li {
         display: flex;
         flex-direction: column;
-        & .blockList > li, & .project_container {
+        & .blockList > li, & .project_container, &.collectBox {
             padding: 8px 16px;
             max-width: 256px;
             display: flex;
@@ -315,6 +328,10 @@
             padding-left: 36px;
         }
 
+         &.collectBox {
+             flex-direction: row;
+         }
+
     }
     & > li .project_container {
         justify-content: flex-start;
@@ -323,7 +340,7 @@
             height: 10px;
             border-radius: 8px;
         }
-        & > span {
+        & > span{
             line-height: 16px;
             margin-left: 6px;
             text-align: center;
@@ -331,6 +348,25 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+    }
+}
+
+.addButtonText {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: $color-font-occupation;
+    &:hover {
+        cursor: pointer;
+        color:$color-theme;
+    }
+    & .icon-add {
+        width: 18px;
+        height: 18px;
+    }
+    & > span {
+        line-height: 18px;
+        text-align: center;
     }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div class="today">
-        <div class="title">{{todayString}}</div>
+        <h2 class="title">{{todayString}}</h2>
         <div class="task_list">
             <ul>
                 <li v-for="task in task_list" :key="task.id">
@@ -24,17 +24,14 @@
         components: {TaskListItem}
     })
     export default class Today extends Vue{
-        todayString = dayjs(new Date()).format("YYYY-MM-DD");
+        todayString = dayjs(new Date()).format("YYYY年MM月DD日");
 
         get task_list():Task[] {
             return this.$store.state.todayTaskList;
         }
 
         created():void {
-            console.log('created');
             this.$store.commit('fetchTodayTaskList');
-            console.log('today task list : ');
-            console.log(this.$store.state.todayTaskList);
         }
     }
 </script>

@@ -16,7 +16,6 @@
                         width="200"
                         trigger="click">
                         <ul class="operate_items">
-                            <!-- <li @click="modifyProject">编辑项目</li> -->
                             <li @click="deleteProject(projectId)">删除项目</li>
                         </ul>
                     </el-popover>

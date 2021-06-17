@@ -27,7 +27,10 @@
                     <i class="el-icon-date"></i>
                     {{taskDueDate}}
                 </div>
-                <div class="task_project">{{taskProject}}</div>
+                <div class="task_project">
+                    <div class="colored_sign" :style="color && `background-color:${color};`"></div>
+                    <span>{{taskProject}}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -39,6 +42,7 @@
     import Component from "vue-class-component";
     import { Prop } from "vue-property-decorator";
     import dayjs from "dayjs";
+import Project from "@/lib/Project";
 
     @Component
     export default class TaskListItem extends Vue{
@@ -48,10 +52,20 @@
 
         get taskProject():string {
             if(this.task.block !== null) {
-                return this.task.project + "/" + this.task.block;
+                return this.task.project + " / " + this.task.block;
             }else {
                 return this.task.project;
             }
+        }
+
+        get color():string {
+            if (this.task.project === '收集箱') return "";
+            const projectList = this.$store.state.projectList as Project[];
+            const project = projectList.find(i => i.name === this.task.project);
+            if(project) {
+                return project.color;
+            }
+            return "";
         }
         
         get taskDueDate():string {
@@ -119,6 +133,14 @@
         & .task_project {
             font-size: 10px;
             color: $color-font-secondary;
+            display: flex;
+            align-items: center;
+            & .colored_sign {
+                width: 8px;
+                height: 8px;
+                border-radius: 6px;
+                margin-right: 4px;
+            }
         }
 
         & .task_due_date {

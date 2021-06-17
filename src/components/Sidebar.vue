@@ -2,13 +2,13 @@
     <div class="sidebar">
         <div class="list_holder">
             <ul class="list">
-                <li><sidebar-list-item link="/today" linkText="今日" elIconClassName="date" /></li>
+                <li><sidebar-list-item link="/today" linkText="今日" elIconClassName="news"/></li>
                 <li><sidebar-list-item link="/calender" linkText="日历" elIconClassName="date" /></li>
             </ul>
             <div class="projects_container">
                 <div class="list_title">
                     <div>项目</div>
-                    <div class="add_project_button" @click="addProject"><i class="el-icon-circle-plus-outline"></i></div>
+                    <div @click="addProject" class="add_project_button"><Icon name="add" class="icon-add"/></div>
                 </div>
                 <ul class="list">
                     <li v-for="project in projectList" :key="project.id">
@@ -69,18 +69,25 @@
 
 .list_title {
     width: 272px;
-    padding: 8px 48px;
+    padding: 8px 36px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
     font-weight: 700;
-
+    cursor: pointer;
     & .add_project_button{
-        padding: 0 2px;
+        line-height: 24px;
+        margin-top: 4px;
         &:hover{
-            cursor: pointer;
-            color:#409EFF;
+            & .icon-add {
+                background: #eee;
+            }
+           
+        }
+        & .icon-add {
+            width: 24px;
+            height: 24px;
         }
     }
 }

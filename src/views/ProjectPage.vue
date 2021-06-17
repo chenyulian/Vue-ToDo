@@ -3,7 +3,11 @@
         <h1>{{project.name}}</h1>
         <ul class="blockList">
            <li v-for="(item, key) in tasks" :key="key">
-                <block-item :blockName="item[0]" :taskList="item[1]" class="blockItem" :showPopover="false" @delete="deleteBlock"/>
+                <block-item :blockName="item[0]" 
+                            :taskList="item[1]" 
+                            class="blockItem" 
+                            :showPopover="false"
+                            @delete="deleteBlock"/>
             </li>
         </ul>
         <div class="addBlockEditor" v-if="blockEditorVisible">
@@ -113,6 +117,19 @@
        }
        cursor: pointer;
    }
+}
+
+.addBlockEditor,.add_block_divider_container{
+   width: 96%;
+   float: right;
+}
+
+.el-divider--horizontal{
+    border-top: 1px solid #79bbff;
+} 
+
+.el-divider__text{
+    color: #79bbff;
 }
 
 .blockList > li{

@@ -29,7 +29,6 @@
 @import "~@/assets/style/common.scss";
 nav {
     height: 80px;
-    // border: 1px solid red;
     position:absolute;
     top:0;
     left:0;
@@ -59,7 +58,7 @@ nav {
         justify-content: center;
         align-items: center;
         padding: 14px 4px;
-        background: $color-blue-3;
+        background: $color-theme;
         color: white;
         border-radius: 20px;
         font-size: 14px;
@@ -84,6 +83,9 @@ nav {
     padding: 7px;
     border: 1px solid #e8e8ea;
     border-radius: 12px;
+    &:hover {
+        cursor: pointer;
+    }
 }
 .bell {
     width: 18px;
