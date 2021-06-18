@@ -50,7 +50,7 @@ export default class App extends Vue {
 
 .content {
   width: 100%;
-  padding: 100px 24px;
+  padding-top: 100px;
 }
 
 .slide-fade-enter-active {

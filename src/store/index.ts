@@ -41,7 +41,7 @@ const store = new Vuex.Store({
       store.commit("saveTaskList", state.taskList);
       store.commit("fetchTodayTaskList");
     },
-
+    
     deleteTask(state, id:string) {
       store.commit("fetchTaskList");
       if(state.taskList === []) {

@@ -3,7 +3,7 @@
         <div class="list_holder">
             <ul class="list">
                 <li><sidebar-list-item link="/today" linkText="今日" elIconClassName="news"/></li>
-                <li><sidebar-list-item link="/calender" linkText="日历" elIconClassName="date" /></li>
+                <li><sidebar-list-item link="/schedule" linkText="日程" elIconClassName="date" /></li>
             </ul>
             <div class="projects_container">
                 <div class="list_title">
@@ -20,6 +20,10 @@
                     </li>
                 </ul>
             </div>
+            <ul class="list">
+                <li><sidebar-list-item link="/record" linkText="记录" elIconClassName="data-line"/></li>
+                <li><sidebar-list-item link="/settings" linkText="设置" elIconClassName="setting"/></li>
+            </ul>
         </div>
     </div>
 </template>
@@ -92,5 +96,9 @@
     }
 }
 
+.projects_container > .list {
+    max-height: 550px;
+    overflow:auto;
+}
 
 </style>
