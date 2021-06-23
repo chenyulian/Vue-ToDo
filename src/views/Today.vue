@@ -30,7 +30,7 @@
             const task_list = (this.$store.state.taskList || []) as Task[];
             return task_list.filter((task)=>{
                 if(task.due_date !== null) {
-                    if(dayjs(task.due_date).isSame(dayjs(new Date()),"day")) {
+                    if(dayjs(task.due_date).isSame(dayjs(new Date()),"day") && task.status === 1) {
                         return true;
                     } else {
                         return false;
@@ -38,8 +38,6 @@
                 }
                 return false;
             });
-          
-          
         }
 
         created():void {
