@@ -86,15 +86,10 @@
             map.set("",[]);
 
             this.block_list.forEach((block)=>{
-                // const blockKey = block.name;
-                // map.set(blockKey, []);
                 result.push({block:block, tasks:[]});
             })
             
             task_list.forEach((task)=>{
-                // const blockKey = task.block_id === null ? "":this.getBlockNameById(task.block_id);
-                // const list = map.get(blockKey)===undefined?[]:map.get(blockKey) as Task[];
-                // map.set(blockKey,map.get(blockKey)===undefined?[task]:[...list, task]);
                 if(task.block_id === null) {
                     result[0].tasks.push(task);
                 }else{
@@ -104,7 +99,6 @@
 
             });
 
-            // return map;
             return result;
         }
 
@@ -123,7 +117,6 @@
 
         deleteBlock(blockId:string):void {
             this.$store.commit("deleteBlock",{blockId});
-            // this.$store.commit("deleteTaskByBlock",{projectName:this.project.name,blockName:blockName})
         }
     }
 </script>

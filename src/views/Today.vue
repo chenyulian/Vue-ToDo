@@ -52,7 +52,6 @@
 @import '~@/assets/style/common.scss';
 
 .today {
-    // border: 1px solid red;
     padding-left: 24px;
     padding-right: 24px;
     max-width: 746px;

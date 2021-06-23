@@ -1,6 +1,5 @@
 <template>
     <div class="schedule">
-        <!-- <div class="tasks_overview">zzz</div> -->
         <div class="calender">
             <el-calendar v-model="currentDate">
                 <div
@@ -8,7 +7,6 @@
                     slot-scope="{date, data}">
                     <p :class="data.isSelected ? 'is-selected' : ''" @click="calendarOnClick(date,data)">
                     {{ data.day.split('-').slice(1).join('-') }} 
-                    <!-- {{ data.isSelected ? '✔️' : ''}} -->
                     </p>
                     <div v-if="data.type === 'current-month'" class="hasTask" style="text-align:center;">
                         <i class="el-icon-more" 

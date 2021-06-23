@@ -190,7 +190,6 @@
 
         get projectList(): ProjectTree[]{
             const projects = this.$store.state.projectList as Project[];
-            // return projects.filter(i => i.status === 1);
             const blocks = this.$store.state.blockList as Block[];
             const result = [] as ProjectTree[];
             for(let p of projects) {
@@ -274,15 +273,11 @@
            // 清空数据
            this.task_content = "";
            this.dueDate = new Date();
-        //    this.dueDate = null;
-        //    this.project = "收集箱";
             this._projectId = this.project_id?this.project_id:"-1";
             this._blockId = this.block_id?this.block_id:null;
             this.blockName = this.getBlockNameById(this._blockId);
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
-
-        //    this.parentProject = "";
            this.selectedTagName = "";
        }
 

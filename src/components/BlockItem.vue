@@ -46,9 +46,6 @@
         components: {TaskListItem}
     })
     export default class BlockItem extends Vue{
-        // title = "";
-
-        // projectid = '1'
 
         @Prop({type:String, required:true})
         blockName!:string;
