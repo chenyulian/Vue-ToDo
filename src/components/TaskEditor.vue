@@ -44,14 +44,14 @@
                     v-model="moreVisible"
                     >
                     <ul class="projectList">
-                        <li class="collectBox" @click="selectProject({name: '收集箱'})"><i class="el-icon-receiving"></i><span style="margin-left:4px;">收集箱</span></li>
-                        <li v-for="project in projectList" :key="project.id" @click="selectProject(project)">
+                        <li class="collectBox" @click="selectProject({id: '-1'})"><i class="el-icon-receiving"></i><span style="margin-left:4px;">收集箱</span></li>
+                        <li v-for="item in projectList" :key="item.project.id" @click="selectProject(item.project)">
                             <div class="project_container">
-                                <div :style="{backgroundColor:project.color}"></div>
-                                <span>{{project.name}}</span>
+                                <div :style="{backgroundColor:item.project.color}"></div>
+                                <span>{{item.project.name}}</span>
                             </div>
-                            <ul v-if="project.blocks.length > 0" class="blockList">
-                                <li v-for="block in project.blocks" :key="block.id" @click.stop="selectBlock(block, project.name, project.color)">
+                            <ul v-if="item.blocks" class="blockList">
+                                <li v-for="block in item.blocks" :key="block.id" @click.stop="selectBlock(block, item.project.id, item.project.color)">
                                     {{block.name}}
                                 </li>
                             </ul>
@@ -112,6 +112,8 @@
     import createId from '@/lib/createId';
     import Project from "@/lib/Project";
     import Block from "@/lib/Block";
+    import { Prop } from "vue-property-decorator";
+    import { ProjectTree } from "@/custom";
 
     @Component
     export default class TaskEditor extends Vue{
@@ -121,7 +123,12 @@
         moreVisible = false;
         isEditing = false;
         project = "收集箱";
-        parentProject = "";
+        
+        _parentId!:string | null;
+        _projectId = "";
+        _blockId!:string | null;
+        projectName = "";
+        blockName="";
         selectedTagName = "";
         projectColor = "";
 
@@ -133,13 +140,38 @@
 
         created():void {
             this.$store.commit("fetchProjectList");
+            this.$store.commit("fetchBlockList");
+            this._projectId = this.project_id?this.project_id:"-1";
+            this._blockId = this.block_id?this.block_id:null;
+            this._parentId = this.parent_id?this.parent_id:null;
+            this.blockName = this.getBlockNameById(this._blockId);
+            this.projectName = this.getProjectById(this._projectId).name;
+            this.projectColor = this.getProjectById(this._projectId).color;
+
         }
 
+        @Prop({type: String})
+        project_id?:string;
+
+        @Prop({type:String})
+        block_id?:string;
+
+        @Prop({type:String})
+        parent_id?:string;
+
         get projectFullName():string {
-            return this.parentProject === ""?this.project:this.parentProject+" / "+this.project;
+            // console.log('xxx')
+            if(this.blockName !== "" && this.blockName !== null && this.blockName !== undefined) {
+                return this.projectName + " / " + this.blockName;
+            }else{
+                return this.projectName;
+            }
         }
         
-        get dueDateString():string {            
+        get dueDateString():string {   
+            if(this.dueDate === null) {
+                return "日程安排";
+            }         
             if(dayjs(this.dueDate).isSame(dayjs(new Date()),'day')){
                 return "今天";
             }
@@ -151,46 +183,80 @@
             }
             return dayjs(this.dueDate).format("MM-DD");
         }
+
         get addButtonAvaliable():boolean {
             return this.task_content.length <= 0;
         }
 
-        get projectList():Project[] {
-            return this.$store.state.projectList;
+        get projectList(): ProjectTree[]{
+            const projects = this.$store.state.projectList as Project[];
+            // return projects.filter(i => i.status === 1);
+            const blocks = this.$store.state.blockList as Block[];
+            const result = [] as ProjectTree[];
+            for(let p of projects) {
+                result.push({project:p, blocks:blocks.filter(i => i.project_id === p.id)});
+            }
+            return result;
         }
 
         addTask():void {
             const task = new Task();
             task.content = this.task_content;
             task.id = createId("task").toString();
-            if(this.projectFullName.indexOf("/") >= 0) {
-                const project = this.projectFullName.split("/")[0].trim();
-                const block = this.projectFullName.split("/")[1].trim();
-                task.project = project;
-                task.block = block;
-            } else {
-                task.project = this.projectFullName;
-            }
-            task.dueDate = this.dueDate.toString();
+            if(this.parent_id) task.parent_id = this.parent_id;
+       
+            task.project_id = this._projectId;
+            task.block_id = this._blockId;
+
+            task.due_date = this.dueDate===null?null:this.dueDate.toString();
             task.status = 1;
             task.tags.push(this.selectedTagName);
             this.$store.commit('addTask', task);
             // 完成后不显示任务编辑
             this.isEditing = false;
+            this.task_content = "";
+            this._projectId = this.project_id?this.project_id:"-1";
+            this._blockId = this.block_id?this.block_id:null;
+            this.blockName = this.getBlockNameById(this._blockId);
+            this.projectName = this.getProjectById(this._projectId).name;
+            this.projectColor = this.getProjectById(this._projectId).color;
+            this.dueDate = new Date();
+            this.selectedTagName = "";
         }
 
         selectProject(project: Project):void {
-            this.project = project.name;
+            this._projectId = project.id;
+            this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = project.color || "";
-           
-            this.parentProject = "";
+            this._blockId = null;
+            this.blockName = "";
             this.moreVisible = false;
             
         }
 
-        selectBlock(block:Block, projectName: string, color:string):void{
-            this.project = block.name;
-            this.parentProject = projectName;
+        getProjectById(id:string):Project{
+            const projectList = this.$store.state.projectList as Project[];
+            const project = projectList.find(i => i.id === id);
+            const result = new Project();
+            result.id = "-1";
+            result.color = "";
+            result.name = "收集箱"
+            if(project) return project;
+            return result;
+        }
+
+        getBlockNameById(id:string|null):string{
+            const blockList = this.$store.state.blockList as Block[];
+            const block = blockList.find(i => i.id === id);
+            if(block) return block.name;
+            return "";
+        }
+
+        selectBlock(block:Block, projectId: string, color:string):void{
+            this._blockId = block.id;
+            this.blockName = this.getBlockNameById(this._blockId);
+            this._projectId = projectId;
+            this.projectName = this.getProjectById(this._projectId).name;
             this.moreVisible = false;
             this.projectColor = color;
         }
@@ -208,8 +274,15 @@
            // 清空数据
            this.task_content = "";
            this.dueDate = new Date();
-           this.project = "收集箱";
-           this.parentProject = "";
+        //    this.dueDate = null;
+        //    this.project = "收集箱";
+            this._projectId = this.project_id?this.project_id:"-1";
+            this._blockId = this.block_id?this.block_id:null;
+            this.blockName = this.getBlockNameById(this._blockId);
+            this.projectName = this.getProjectById(this._projectId).name;
+            this.projectColor = this.getProjectById(this._projectId).color;
+
+        //    this.parentProject = "";
            this.selectedTagName = "";
        }
 

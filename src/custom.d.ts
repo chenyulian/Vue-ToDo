@@ -20,7 +20,17 @@ import Block from "./lib/Block";
 
 type RootState = {
    taskList: Task[],
-   todayTaskList: Task[],
+   // todayTaskList: Task[],
    projectList: Project[],
    blockList: Block[]
+}
+
+type ProjectTree = {
+   project: Project,
+   blocks: Block[]
+}
+
+type BlockTree = {
+   block:Block,
+   tasks: Task[]
 }

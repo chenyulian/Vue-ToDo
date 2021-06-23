@@ -2,9 +2,11 @@
     <div class="projectPage">
         <h1>{{project.name}}</h1>
         <ul class="blockList">
-           <li v-for="(item, key) in tasks" :key="key">
-                <block-item :blockName="item[0]" 
-                            :taskList="item[1]" 
+           <li v-for="(item) in task_list" :key="item.block.id">
+                <block-item :blockName="item.block.name" 
+                            :taskList="item.tasks"
+                            :blockId="item.block.id"
+                            :projectId="item.block.project_id"
                             class="blockItem" 
                             :showPopover="false"
                             @delete="deleteBlock"/>
@@ -27,8 +29,10 @@
     import Component from "vue-class-component";
     import Project from "@/lib/Project";
     import Task from "@/lib/Task";
+    import Block from "@/lib/Block";
     import TaskListItem from "@/components/TaskListItem.vue";
     import BlockItem from "@/components/BlockItem.vue";
+    import { BlockTree } from "@/custom";
 
     @Component({
         components: {TaskListItem,BlockItem}
@@ -39,7 +43,11 @@
 
         newBlockName = "";
 
-        zxz=false;
+        beforeCreate():void {
+            this.$store.commit("fetchProjectList");
+            this.$store.commit("fetchTaskList");
+            this.$store.commit("fetchBlockList");
+        }
 
         get projectId():string{
             return this.$route.params.id;
@@ -51,34 +59,59 @@
             });
         }
 
-        get tasks():Map<string,Task[]> {
-            const taskList = this.$store.state.taskList as Task[];
-            const blockList = this.project.blocks;
-            const tasks = taskList.filter((t:Task)=>{
-                return t.project === this.project.name && t.status === 1;
+        get block_list():Block[] {
+            const blocks = this.$store.state.blockList as Block[];
+            return blocks.filter((block)=>{
+                if(block.project_id === this.projectId && block.status === 1) {
+                    return true;
+                }
+                return false;
+            })
+        }
+
+        get task_list():BlockTree[] {
+            const tasks = this.$store.state.taskList as Task[];
+            // const blockList = this.;
+            const task_list = tasks.filter((task)=>{
+                return task.project_id === this.projectId && task.status === 1;
             });
             
             let map:Map<string,Task[]> = new Map();
-
+            let result:BlockTree[] = [];
+            let defaultBlock = new Block();
+            defaultBlock.id = "-1";
+            defaultBlock.name = "";
+            defaultBlock.project_id = this.projectId;
+            result.push({block: defaultBlock, tasks:[]});
             map.set("",[]);
 
-            blockList.forEach((block)=>{
-                const blockKey = block.name;
-                map.set(blockKey, []);
+            this.block_list.forEach((block)=>{
+                // const blockKey = block.name;
+                // map.set(blockKey, []);
+                result.push({block:block, tasks:[]});
             })
             
-            tasks.forEach((task)=>{
-                const blockKey = task.block === null ? "":task.block;
-                const list = map.get(blockKey)===undefined?[]:map.get(blockKey) as Task[];
-                map.set(blockKey,map.get(blockKey)===undefined?[task]:[...list, task]);
+            task_list.forEach((task)=>{
+                // const blockKey = task.block_id === null ? "":this.getBlockNameById(task.block_id);
+                // const list = map.get(blockKey)===undefined?[]:map.get(blockKey) as Task[];
+                // map.set(blockKey,map.get(blockKey)===undefined?[task]:[...list, task]);
+                if(task.block_id === null) {
+                    result[0].tasks.push(task);
+                }else{
+                    const item = result.find(i => i.block.id === task.block_id);
+                    item?.tasks.push(task);
+                }
+
             });
 
-            return map;
+            // return map;
+            return result;
         }
 
-        beforeCreate():void {
-            this.$store.commit("fetchProjectList");
-            this.$store.commit("fetchTaskList");
+        getBlockNameById(block_id:string):string {
+            const block = this.block_list.find(t => t.id === block_id);
+            if(block) return block.name;
+            return "";
         }
 
         addBlock(projectId: string):void {
@@ -88,9 +121,9 @@
             this.newBlockName = "";
         }
 
-        deleteBlock(blockName:string):void {
-            this.$store.commit("deleteBlock",{projectId:this.projectId, blockName:blockName});
-            this.$store.commit("deleteTaskByBlock",{projectName:this.project.name,blockName:blockName})
+        deleteBlock(blockId:string):void {
+            this.$store.commit("deleteBlock",{blockId});
+            // this.$store.commit("deleteTaskByBlock",{projectName:this.project.name,blockName:blockName})
         }
     }
 </script>

@@ -29,7 +29,7 @@
                 </div>
                 <div class="task_project">
                     <div class="colored_sign" :style="color && `background-color:${color};`"></div>
-                    <span>{{taskProject}}</span>
+                    <span>{{taskProjectName}}</span>
                 </div>
             </div>
         </div>
@@ -42,7 +42,8 @@
     import Component from "vue-class-component";
     import { Prop } from "vue-property-decorator";
     import dayjs from "dayjs";
-import Project from "@/lib/Project";
+    import Project from "@/lib/Project";
+    import Block from "@/lib/Block";
 
     @Component
     export default class TaskListItem extends Vue{
@@ -50,18 +51,27 @@ import Project from "@/lib/Project";
         @Prop({required: true})
         task!: Task;
 
-        get taskProject():string {
-            if(this.task.block !== null) {
-                return this.task.project + " / " + this.task.block;
-            }else {
-                return this.task.project;
+        get taskProjectName():string {
+            if(this.task.project_id === "-1") {
+                return "收集箱";
+            }
+            const projectList = this.$store.state.projectList as Project[];
+            const blockList = this.$store.state.blockList as Block[];
+            const project = projectList.find(i => i.id === this.task.project_id);
+            const block = blockList.find(i => i.id === this.task.block_id);
+            if(project !== undefined && block !== undefined) {
+                return project.name + " / " + block.name;
+            } else if(project !== undefined) {
+                return project.name;
+            } else {
+                return "收集箱";
             }
         }
 
         get color():string {
-            if (this.task.project === '收集箱') return "";
+            if (this.task.project_id === '-1') return "";
             const projectList = this.$store.state.projectList as Project[];
-            const project = projectList.find(i => i.name === this.task.project);
+            const project = projectList.find(i => i.id === this.task.project_id);
             if(project) {
                 return project.color;
             }
@@ -69,18 +79,18 @@ import Project from "@/lib/Project";
         }
         
         get taskDueDate():string {
-            if(this.task.dueDate === null) return "";
+            if(this.task.due_date === null) return "";
 
-            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()),'day')){
+            if(dayjs(this.task.due_date).isSame(dayjs(new Date()),'day')){
                 return "今天";
             }
-            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()).add(1,'day'),'day')){
+            if(dayjs(this.task.due_date).isSame(dayjs(new Date()).add(1,'day'),'day')){
                 return "明天";
             }
-            if(dayjs(this.task.dueDate).isSame(dayjs(new Date()).add(2,'day'),'day')){
+            if(dayjs(this.task.due_date).isSame(dayjs(new Date()).add(2,'day'),'day')){
                 return "后天";
             }
-            return dayjs(this.task.dueDate).format("MM-DD");
+            return dayjs(this.task.due_date).format("MM-DD");
         }
 
         deleteTask(id:string):void {

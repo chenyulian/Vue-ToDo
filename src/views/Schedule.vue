@@ -25,8 +25,9 @@
                     :timestamp="task.dueDate"
                     :hide-timestamp="true"
                     :type="task.status === 2 ? 'success':'primary'"
+                    :color="task.status === 2?'':getProjectById(task.project_id).color"
                     :icon="task.status === 2 ? 'el-icon-check':''">
-                    {{task.content}} - {{task.project}}
+                    {{task.content}} - {{getProjectById(task.project_id).name}}
                     </el-timeline-item>
                 </el-timeline>
             </div>
@@ -40,6 +41,7 @@
     import Component from "vue-class-component";
     import dayjs from "dayjs";
     import { Watch } from "vue-property-decorator";
+    import Project from "@/lib/Project";
     
     @Component
     export default class Schedule extends Vue{
@@ -54,11 +56,11 @@
         currentDateChange():void {
             const taskList = this.$store.state.taskList as Task[];
             this.taskListThisMonth = taskList.filter((task)=>{
-                if(task.dueDate) return dayjs(task.dueDate).isSame(this.currentDate,"month");
+                if(task.due_date) return dayjs(task.due_date).isSame(this.currentDate,"month") && task.status > 0;
                 return false;
             });
             this.taskListThisDay = taskList.filter((task)=>{
-                if(task.dueDate) return dayjs(task.dueDate).isSame(dayjs(this.currentDate),"day");
+                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(this.currentDate),"day") && task.status > 0;
                 return false;
             });
 
@@ -68,11 +70,11 @@
             this.$store.commit("fetchTaskList");
             const taskList = this.$store.state.taskList as Task[];
             this.taskListThisMonth = taskList.filter((task)=>{
-                if(task.dueDate) return dayjs(task.dueDate).isSame(dayjs(),"month");
+                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"month");
                 return false;
             });
             this.taskListThisDay = taskList.filter((task)=>{
-                if(task.dueDate) return dayjs(task.dueDate).isSame(dayjs(),"day");
+                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"day");
                 return false;
             });
 
@@ -85,14 +87,24 @@
         hasTasks(date:string):boolean {
            
             const result = this.taskListThisMonth.filter((task)=>{
-                if(task.dueDate) return dayjs(task.dueDate).isSame(date,'day');
+                if(task.due_date) return dayjs(task.due_date).isSame(date,'day');
                 return false;
             });
             if(result && result.length > 0) {
                 return true;
             }
             return false;
-            
+        }
+
+        getProjectById(id:string):Project{
+            const projectList = this.$store.state.projectList as Project[];
+            const project = projectList.find(i => i.id === id);
+            const result = new Project();
+            result.id = "-1";
+            result.color = "";
+            result.name = "收集箱"  
+            if(project) return project;
+            return result;
         }
     }
 

@@ -27,11 +27,23 @@
         todayString = dayjs(new Date()).format("YYYY年MM月DD日");
 
         get task_list():Task[] {
-            return this.$store.state.todayTaskList;
+            const task_list = (this.$store.state.taskList || []) as Task[];
+            return task_list.filter((task)=>{
+                if(task.due_date !== null) {
+                    if(dayjs(task.due_date).isSame(dayjs(new Date()),"day")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return false;
+            });
+          
+          
         }
 
         created():void {
-            this.$store.commit('fetchTodayTaskList');
+            this.$store.commit("fetchTaskList");
         }
     }
 </script>

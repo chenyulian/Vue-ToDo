@@ -8,7 +8,7 @@
             ref="popover"
            >
            <ul class="operate_items">
-               <li @click="$emit('delete', blockName)">
+               <li @click="$emit('delete', blockId)">
                    删除模块
                </li>
            </ul>
@@ -28,7 +28,7 @@
                             <hr />
                         </li>
                     </ul>
-                    <task-editor v-if="showTasks" /> 
+                    <task-editor v-if="showTasks" :project_id="projectId" :block_id="blockId" /> 
                 </div>
             </transition>
          </div>
@@ -46,13 +46,21 @@
         components: {TaskListItem}
     })
     export default class BlockItem extends Vue{
-        title = "";
+        // title = "";
+
+        // projectid = '1'
 
         @Prop({type:String, required:true})
         blockName!:string;
 
         @Prop({type:Array, required:true})
         taskList?:Task[];
+
+        @Prop({type:String, required:true})
+        blockId!:string;
+
+        @Prop({type:String, required:true})
+        projectId!:string;
 
         showPopover=false;
 
