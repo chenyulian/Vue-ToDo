@@ -16,7 +16,8 @@
                         :link="'/projects/' + project.id" 
                         :linkText="project.name" 
                         :projectColor="project.color"
-                        :projectId="project.id" />
+                        :projectId="project.id"
+                        @modifyProject="$emit('update:addProjectDialogVisible', true)" />
                     </li>
                 </ul>
             </div>
@@ -52,6 +53,7 @@
        }
 
        addProject():void {
+           this.$store.commit("updateCurrentProject", new Project());
            this.$emit("update:addProjectDialogVisible", true);
        }
     }

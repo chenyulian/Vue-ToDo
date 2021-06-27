@@ -5,6 +5,7 @@ import { RootState } from '@/custom'
 import Project from '@/lib/Project'
 import Block from '@/lib/Block'
 import createId from '@/lib/createId'
+import clone from '@/lib/clone'
 
 Vue.use(Vuex)
 
@@ -13,7 +14,8 @@ const store = new Vuex.Store({
     taskList: [],
     // todayTaskList: [],
     projectList: [],
-    blockList: []
+    blockList: [],
+    currentProjectForDialog: new Project()
   } as RootState,
   mutations: {
     fetchTaskList(state) {
@@ -67,9 +69,16 @@ const store = new Vuex.Store({
       localStorage.setItem("project_list",JSON.stringify(projects));
     },
 
-    addNewProjct(state, project:Project) {
+    modifyProject(state, project:Project) {
       store.commit("fetchProjectList");
-      state.projectList.push(project);
+      const p = state.projectList.find(i => i.id === project.id);
+      if(p === undefined) {
+        state.projectList.push(project);
+      } else {
+        p.name = project.name;
+        p.color = project.color;
+      }
+      
       store.commit("saveProjectList",state.projectList);
     },
 
@@ -122,6 +131,9 @@ const store = new Vuex.Store({
       store.commit("saveBlockList",state.blockList);
        
     },
+    updateCurrentProject(state, payload: Project) {
+      state.currentProjectForDialog = clone(payload);
+    }
   },
   actions: {
   },

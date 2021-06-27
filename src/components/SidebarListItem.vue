@@ -16,6 +16,7 @@
                         width="200"
                         trigger="click">
                         <ul class="operate_items">
+                            <li @click="modifyProject(projectId)">编辑项目</li>
                             <li @click="deleteProject(projectId)">删除项目</li>
                         </ul>
                     </el-popover>
@@ -26,12 +27,12 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import Component from "vue-class-component";
+    import ProjectHelper from "@/mixins/ProjectHelper";
+    import Component, { mixins } from "vue-class-component";
     import { Prop } from "vue-property-decorator";
 
     @Component
-    export default class SidebarListItem extends Vue {
+    export default class SidebarListItem extends mixins(ProjectHelper) {
         @Prop({type:String, required:true})
         link!:string;
 
@@ -47,10 +48,9 @@
         @Prop({type:String})
         projectId?:string;
 
-
-
         modifyProject(id:string):void {
             this.$emit("modifyProject",id);
+            this.$store.commit("updateCurrentProject",this.getProjectById(id));
         }
 
         deleteProject(id:string):void {

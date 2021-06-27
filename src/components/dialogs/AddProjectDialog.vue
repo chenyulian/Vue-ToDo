@@ -21,23 +21,32 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import Component from "vue-class-component";
+    import Component, { mixins } from "vue-class-component";
     import Project from "@/lib/Project";
     import { Prop } from "vue-property-decorator";
     import createId from "@/lib/createId";
+    import ProjectHelper from "@/mixins/ProjectHelper";
 
     @Component
-    export default class AddProjectDialog extends Vue {
-        project = new Project();
+    export default class AddProjectDialog extends mixins(ProjectHelper) {
 
         @Prop({type:Boolean, required:true})
         visible!:boolean;
 
+        get project():Project {
+          const currentProject = this.$store.state.currentProjectForDialog as Project;
+          return currentProject;
+        }
+
+        set project(value:Project) {
+          this.$store.commit("updateCurrentProject",value);
+        }
+
         submitNewProject():void {
-            this.project.id = createId("project").toString();
-            this.$store.commit("addNewProjct", this.project);
-            this.$emit('update:visible',false);
+          if(this.project.id === "") this.project.id = createId("project").toString();
+            
+          this.$store.commit("modifyProject", this.project);
+          this.$emit('update:visible',false);
         }
 
         handleClose():void {

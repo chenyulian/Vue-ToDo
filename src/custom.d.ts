@@ -5,7 +5,8 @@ import Block from "./lib/Block";
 type RootState = {
    taskList: Task[],
    projectList: Project[],
-   blockList: Block[]
+   blockList: Block[],
+   currentProjectForDialog: Project
 }
 
 type ProjectTree = {
