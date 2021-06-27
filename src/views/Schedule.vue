@@ -68,11 +68,11 @@
             this.$store.commit("fetchTaskList");
             const taskList = this.$store.state.taskList as Task[];
             this.taskListThisMonth = taskList.filter((task)=>{
-                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"month");
+                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"month") && task.status > 0;
                 return false;
             });
             this.taskListThisDay = taskList.filter((task)=>{
-                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"day");
+                if(task.due_date) return dayjs(task.due_date).isSame(dayjs(),"day") && task.status > 0;
                 return false;
             });
 

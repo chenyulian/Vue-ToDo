@@ -40,7 +40,8 @@
     export default class Sidebar extends Vue{
 
        get projectList():Project[] {
-           return this.$store.state.projectList;
+           const allProjects = this.$store.state.projectList as Project[];
+           return allProjects.filter(i => i.status === 1);
        }
        
         @Prop({type:Boolean,required:true})
