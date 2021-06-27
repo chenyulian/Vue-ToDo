@@ -35,14 +35,14 @@
 
 <script lang="ts">
     import Task from "@/lib/Task";
-    import Vue from "vue";
-    import Component from "vue-class-component";
+    import Component, { mixins } from "vue-class-component";
     import dayjs from "dayjs";
     import { Watch } from "vue-property-decorator";
-    import Project from "@/lib/Project";
+    import ProjectHelper from "@/mixins/ProjectHelper";
+    import BlockHelper from "@/mixins/BlockHelper";
     
     @Component
-    export default class Schedule extends Vue{
+    export default class Schedule extends mixins(ProjectHelper,BlockHelper){
 
         currentDate = new Date();
 
@@ -92,17 +92,6 @@
                 return true;
             }
             return false;
-        }
-
-        getProjectById(id:string):Project{
-            const projectList = this.$store.state.projectList as Project[];
-            const project = projectList.find(i => i.id === id);
-            const result = new Project();
-            result.id = "-1";
-            result.color = "";
-            result.name = "收集箱"  
-            if(project) return project;
-            return result;
         }
     }
 

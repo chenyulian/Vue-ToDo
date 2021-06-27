@@ -105,25 +105,24 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import Component from "vue-class-component";
     import dayjs from 'dayjs';
     import Task from '@/lib/Task';
     import createId from '@/lib/createId';
     import Project from "@/lib/Project";
     import Block from "@/lib/Block";
-    import { Prop } from "vue-property-decorator";
+    import { Prop,Component } from "vue-property-decorator";
     import { ProjectTree } from "@/custom";
+    import { mixins } from "vue-class-component";
+    import ProjectHelper from "@/mixins/ProjectHelper";
+    import BlockHelper from "@/mixins/BlockHelper";
 
     @Component
-    export default class TaskEditor extends Vue{
+    export default class TaskEditor extends mixins(ProjectHelper,BlockHelper){
         task_content = "";
         dueDate = new Date();
         visible = false;
         moreVisible = false;
-        isEditing = false;
-        project = "收集箱";
-        
+        isEditing = false;        
         _parentId!:string | null;
         _projectId = "";
         _blockId!:string | null;
@@ -144,10 +143,9 @@
             this._projectId = this.project_id?this.project_id:"-1";
             this._blockId = this.block_id?this.block_id:null;
             this._parentId = this.parent_id?this.parent_id:null;
-            this.blockName = this.getBlockNameById(this._blockId);
+            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
-
         }
 
         @Prop({type: String})
@@ -160,7 +158,6 @@
         parent_id?:string;
 
         get projectFullName():string {
-            // console.log('xxx')
             if(this.blockName !== "" && this.blockName !== null && this.blockName !== undefined) {
                 return this.projectName + " / " + this.blockName;
             }else{
@@ -216,7 +213,7 @@
             this.task_content = "";
             this._projectId = this.project_id?this.project_id:"-1";
             this._blockId = this.block_id?this.block_id:null;
-            this.blockName = this.getBlockNameById(this._blockId);
+            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
             this.dueDate = new Date();
@@ -233,27 +230,9 @@
             
         }
 
-        getProjectById(id:string):Project{
-            const projectList = this.$store.state.projectList as Project[];
-            const project = projectList.find(i => i.id === id);
-            const result = new Project();
-            result.id = "-1";
-            result.color = "";
-            result.name = "收集箱"
-            if(project) return project;
-            return result;
-        }
-
-        getBlockNameById(id:string|null):string{
-            const blockList = this.$store.state.blockList as Block[];
-            const block = blockList.find(i => i.id === id);
-            if(block) return block.name;
-            return "";
-        }
-
         selectBlock(block:Block, projectId: string, color:string):void{
             this._blockId = block.id;
-            this.blockName = this.getBlockNameById(this._blockId);
+            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
             this._projectId = projectId;
             this.projectName = this.getProjectById(this._projectId).name;
             this.moreVisible = false;
@@ -275,7 +254,7 @@
            this.dueDate = new Date();
             this._projectId = this.project_id?this.project_id:"-1";
             this._blockId = this.block_id?this.block_id:null;
-            this.blockName = this.getBlockNameById(this._blockId);
+            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
            this.selectedTagName = "";
