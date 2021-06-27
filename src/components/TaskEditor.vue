@@ -186,8 +186,8 @@
         }
 
         get projectList(): ProjectTree[]{
-            const projects = this.$store.state.projectList as Project[];
-            const blocks = this.$store.state.blockList as Block[];
+            const projects = (this.$store.state.projectList as Project[]).filter(i => i.status === 1);
+            const blocks = (this.$store.state.blockList as Block[]).filter(i => i.status === 1);
             const result = [] as ProjectTree[];
             for(let p of projects) {
                 result.push({project:p, blocks:blocks.filter(i => i.project_id === p.id)});
