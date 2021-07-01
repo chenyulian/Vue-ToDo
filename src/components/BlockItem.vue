@@ -8,6 +8,9 @@
             ref="popover"
            >
            <ul class="operate_items">
+               <li @click="isEditing = true">
+                   修改模块
+               </li>
                <li @click="$emit('delete', blockId)">
                    删除模块
                </li>
@@ -18,7 +21,12 @@
                 <div @click="showTasks = !showTasks" :class="showTasks?'':'hideList'">
                     <i class="el-icon-arrow-down"></i>
                 </div>
-                <div>{{blockName}}</div>
+                <!-- <div>{{blockName}}</div> -->
+                <input class="blockName" :class="isEditing?'isEditing':''" 
+                      v-model="_blockName"
+                      :disabled="!isEditing" 
+                      @blur="isEditing = false"
+                      @keyup.enter="modifyBlock(blockId)">
             </div>
             <transition name="fade">
                 <div class="task_list" v-if="showTasks">
@@ -50,6 +58,8 @@
         @Prop({type:String, required:true})
         blockName!:string;
 
+        _blockName="";
+
         @Prop({type:Array, required:true})
         taskList?:Task[];
 
@@ -62,6 +72,17 @@
         showPopover=false;
 
         showTasks = true;
+
+        isEditing = false;
+
+        created() :void {
+            this._blockName = this.blockName || "";
+        }
+
+        modifyBlock():void {
+            this.isEditing = false;
+            this.$emit("update:blockName",this._blockName);
+        }
     }
 </script>
 
@@ -99,10 +120,29 @@
             transform: rotate(-90deg);
         }
     }
-    & div:nth-child(2) {
+    // & input:first-child {
+    //     font-weight: 700;
+    //     margin-left: 4px;
+    //     font-size: 14px;
+    //     border: none;
+    // }
+
+    & .blockName {
         font-weight: 700;
         margin-left: 4px;
         font-size: 14px;
+        border: none;
+        background: none;
+        &:hover{
+            cursor:default;
+        }
+        &.isEditing {
+            &:hover{
+                cursor:auto;
+                
+            }
+            border: 1px solid $color-theme;
+        }
     }
 }
 

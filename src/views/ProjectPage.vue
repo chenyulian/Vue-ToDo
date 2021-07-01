@@ -9,7 +9,8 @@
                             :projectId="item.block.project_id"
                             class="blockItem" 
                             :showPopover="false"
-                            @delete="deleteBlock"/>
+                            @delete="deleteBlock"
+                            @update:blockName="modifyBlock($event,item.block.id)" />
             </li>
         </ul>
         <div class="addBlockEditor" v-if="blockEditorVisible">
@@ -71,7 +72,6 @@
 
         get task_list():BlockTree[] {
             const tasks = this.$store.state.taskList as Task[];
-            // const blockList = this.;
             const task_list = tasks.filter((task)=>{
                 return task.project_id === this.projectId && task.status === 1;
             });
@@ -117,6 +117,10 @@
 
         deleteBlock(blockId:string):void {
             this.$store.commit("deleteBlock",{blockId});
+        }
+
+        modifyBlock(name:string, id:string):void {
+            this.$store.commit("modifyBlock", {id, name});
         }
     }
 </script>

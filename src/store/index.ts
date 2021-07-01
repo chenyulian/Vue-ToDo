@@ -131,6 +131,12 @@ const store = new Vuex.Store({
       store.commit("saveBlockList",state.blockList);
        
     },
+    modifyBlock(state, payload: Block) {
+      const {id, name} = payload;
+      const block = state.blockList.find(i => i.id === id);
+      if(block) block.name = name;
+      store.commit("saveBlockList", state.blockList);
+    },
     updateCurrentProject(state, payload: Project) {
       state.currentProjectForDialog = clone(payload);
     }
