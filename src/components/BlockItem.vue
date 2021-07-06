@@ -21,7 +21,6 @@
                 <div @click="showTasks = !showTasks" :class="showTasks?'':'hideList'">
                     <i class="el-icon-arrow-down"></i>
                 </div>
-                <!-- <div>{{blockName}}</div> -->
                 <input class="blockName" :class="isEditing?'isEditing':''" 
                       v-model="_blockName"
                       :disabled="!isEditing" 
@@ -36,7 +35,10 @@
                             <hr />
                         </li>
                     </ul>
-                    <task-editor v-if="showTasks" :project_id="projectId" :block_id="blockId" /> 
+                    <div class="add_task" v-if="showTasks">
+                        <task-editor  :project_id="projectId" :block_id="blockId" v-if="isAdding" @cancel="isAdding=false" @finish="isAdding=false" /> 
+                        <add-task-button v-else @click="isAdding = true" />
+                    </div>
                 </div>
             </transition>
          </div>
@@ -48,10 +50,11 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import TaskListItem from "@/components/TaskListItem.vue";
+    import AddTaskButton from "@/components/AddTaskButton.vue";
     import Task from "@/lib/Task";
     import { Prop } from "vue-property-decorator";
     @Component({
-        components: {TaskListItem}
+        components: {TaskListItem,AddTaskButton}
     })
     export default class BlockItem extends Vue{
 
@@ -74,6 +77,8 @@
         showTasks = true;
 
         isEditing = false;
+
+        isAdding = false;
 
         created() :void {
             this._blockName = this.blockName || "";
@@ -173,5 +178,8 @@
     }
 }
 
+.add_task {
+    margin-top: 8px;
+}
 
 </style>

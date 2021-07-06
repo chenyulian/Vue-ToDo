@@ -84,19 +84,14 @@
         
     </div>
     <div class="buttons_container">
-        
-        <el-button type="primary" size="medium" class="add_button" v-if="isEditing" @click="addTask" :disabled="addButtonAvaliable">
+        <el-button type="primary" size="medium" class="add_button" @click="saveTask" :disabled="addButtonAvaliable">
             <i class="el-icon-circle-plus"
             ></i>
-            添加任务
+            <span>{{task_id !== undefined?'保存':'添加任务'}}</span>
+            
         </el-button>
 
-        <div class="addButtonText" v-else @click="isEditing = !isEditing">
-            <Icon name="add" class="icon-add" />
-            <span>添加任务</span>
-        </div>
-
-        <el-button type="text" size="medium" class="cancel_button" v-if="isEditing"
+        <el-button type="text" size="medium" class="cancel_button"
             @click="cancel">
             取消
         </el-button>
@@ -146,6 +141,16 @@
             this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
+            
+            const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
+            if(task !== undefined) {
+                this.task_content = task.content;
+                // to fix Tag取值逻辑
+                this.selectedTagName = task.tags.length >= 0? task.tags[0]:"";
+                if(task.due_date) {
+                    this.dueDate = new Date(task.due_date);
+                }
+            }
         }
 
         @Prop({type: String})
@@ -156,6 +161,9 @@
 
         @Prop({type:String})
         parent_id?:string;
+
+        @Prop({type:String})
+        task_id?:string;
 
         get projectFullName():string {
             if(this.blockName !== "" && this.blockName !== null && this.blockName !== undefined) {
@@ -195,19 +203,32 @@
             return result;
         }
 
-        addTask():void {
-            const task = new Task();
-            task.content = this.task_content;
-            task.id = createId("task").toString();
-            if(this.parent_id) task.parent_id = this.parent_id;
-       
-            task.project_id = this._projectId;
-            task.block_id = this._blockId;
+        saveTask():void {
+            if(this.task_id === undefined) {
+                const task = new Task();
+                task.content = this.task_content;
+                task.id = createId("task").toString();
+                if(this.parent_id) task.parent_id = this.parent_id;
+        
+                task.project_id = this._projectId;
+                task.block_id = this._blockId;
 
-            task.due_date = this.dueDate===null?null:this.dueDate.toString();
-            task.status = 1;
-            task.tags.push(this.selectedTagName);
-            this.$store.commit('addTask', task);
+                task.due_date = this.dueDate===null?null:this.dueDate.toString();
+                task.status = 1;
+                task.tags.push(this.selectedTagName);
+                this.$store.commit('addTask', task);
+            } else {
+                const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
+                if(task) {
+                    task.content = this.task_content;
+                    task.project_id = this._projectId;
+                    task.block_id = this._blockId;
+                    task.due_date = this.dueDate===null?null:this.dueDate.toString();
+                    task.tags.push(this.selectedTagName);
+                    this.$store.commit('updateTask', task);
+                }
+            }
+            
             // 完成后不显示任务编辑
             this.isEditing = false;
             this.task_content = "";
@@ -218,6 +239,8 @@
             this.projectColor = this.getProjectById(this._projectId).color;
             this.dueDate = new Date();
             this.selectedTagName = "";
+
+            this.$emit("finish");
         }
 
         selectProject(project: Project):void {
@@ -247,17 +270,17 @@
            this.selectedTagName = "";
        }
 
-       cancel():void {
-           this.isEditing = !this.isEditing;
+       cancel():void {        
            // 清空数据
            this.task_content = "";
            this.dueDate = new Date();
-            this._projectId = this.project_id?this.project_id:"-1";
-            this._blockId = this.block_id?this.block_id:null;
-            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
-            this.projectName = this.getProjectById(this._projectId).name;
-            this.projectColor = this.getProjectById(this._projectId).color;
+           this._projectId = this.project_id?this.project_id:"-1";
+           this._blockId = this.block_id?this.block_id:null;
+           this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
+           this.projectName = this.getProjectById(this._projectId).name;
+           this.projectColor = this.getProjectById(this._projectId).color;
            this.selectedTagName = "";
+           this.$emit("cancel");
        }
 
     }
@@ -272,22 +295,17 @@
     flex-direction: column;
     padding: 8px 0;
     margin-top: 8px;
-    &.isEditing{
-        border: 1px solid #DCDFE6;
-        border-radius: 5px;
-    }
+    border: 1px solid #DCDFE6;
+    border-radius: 5px;
 }
 
 .task_edit_container {
-    display: none;
-    &.isEditing{
         display: flex;
         flex-direction: column;
         min-height: 48px;
         border-radius: 5px;
         padding: 0 18px;
         font-size: 14px;
-    }
 }
 
 .content-container {
@@ -395,25 +413,6 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-    }
-}
-
-.addButtonText {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: $color-font-occupation;
-    &:hover {
-        cursor: pointer;
-        color:$color-theme;
-    }
-    & .icon-add {
-        width: 18px;
-        height: 18px;
-    }
-    & > span {
-        line-height: 18px;
-        text-align: center;
     }
 }
 </style>

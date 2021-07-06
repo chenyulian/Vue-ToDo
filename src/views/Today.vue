@@ -4,12 +4,15 @@
         <div class="task_list">
             <ul>
                 <li v-for="task in task_list" :key="task.id">
-                    <TaskListItem :task = "task" />
+                    <TaskListItem :task = "task" v-if="!isEditing" @edit="editTask(task.id)" />
                     <hr />
                 </li>
             </ul>
         </div>
-        <task-editor />
+        <div class="add_task">
+            <task-editor v-if="isAdding" @cancel="isAdding = false" @finish="isAdding = false"  />
+            <add-task-button v-else @click="isAdding = true"/>
+        </div>
     </div>
 </template>
 
@@ -17,14 +20,19 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import TaskListItem from "@/components/TaskListItem.vue";
+    import AddTaskButton from "@/components/AddTaskButton.vue";
     import dayjs from 'dayjs';
     import Task from '@/lib/Task';
 
     @Component({
-        components: {TaskListItem}
+        components: {TaskListItem,AddTaskButton}
     })
     export default class Today extends Vue{
         todayString = dayjs(new Date()).format("YYYY年MM月DD日");
+
+        isEditing = false;
+        editingTaskId = "-1";
+        isAdding = false;
 
         get task_list():Task[] {
             const task_list = (this.$store.state.taskList || []) as Task[];
@@ -42,6 +50,12 @@
 
         created():void {
             this.$store.commit("fetchTaskList");
+            this.$store.commit("fetchBlockList");
+        }
+
+        editTask(taskId:string):void {
+            this.editingTaskId = taskId;
+            this.isEditing = true;
         }
     }
 </script>
@@ -64,4 +78,7 @@
     height:1px;
 }
 
+.add_task {
+    margin-top: 8px;
+}
 </style>

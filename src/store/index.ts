@@ -31,6 +31,9 @@ const store = new Vuex.Store({
       state.taskList.push(task);
       store.commit("saveTaskList", state.taskList);
     },
+    updateTask(state, task:Task) {
+      store.commit("saveTaskList", state.taskList);
+    },
     
     deleteTask(state, id:string) {
       store.commit("fetchTaskList");

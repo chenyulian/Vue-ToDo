@@ -1,35 +1,44 @@
 <template>
     <div class="task_list_item">
-        <div class="check_box_circle" @click="finishTask(task.id)">
-            <Icon name="tick" class="tick" />
-        </div>
-        <div class="task">
-            <div class="task_container">
-                <div class="task_content">{{task.content}}</div>
-                <div class="task_operation">
-                    <i class="el-icon-more" v-popover:operation-popover></i>
-                     <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="click"
-                        ref="operation-popover">
-                        <ul class="operation_list">
-                            <li>
-                                <i class="el-icon-delete"></i>
-                                <div @click="deleteTask(task.id)">删除任务</div> 
-                            </li>
-                        </ul>
-                    </el-popover>
-                </div>
+        <task-editor :project_id="task.project_id" :block_id="task.block_id" :task_id="task.id" v-if="isEditing"
+            @cancel = "isEditing = false" @finish="isEditing = false" />
+        <div class="task_info" v-else>
+            <div class="check_box_circle" @click="finishTask(task.id)">
+                <Icon name="tick" class="tick" />
             </div>
-            <div class="task_meta">
-                <div class="task_due_date">
-                    <i class="el-icon-date"></i>
-                    {{taskDueDate}}
+            <div class="task">
+                <div class="task_container">
+                    <div class="task_content">{{task.content}}</div>
+                    <div class="task_operation">
+                        <i class="el-icon-more" v-popover:operation-popover></i>
+                        <el-popover
+                            placement="bottom"
+                            width="200"
+                            trigger="click"
+                            ref="operation-popover">
+                            <ul class="operation_list">
+                                 <li @click="isEditing = true">
+                                    <i class="el-icon-edit-outline"></i>
+                                    <div>修改任务</div> 
+                                </li>
+                                <li @click="deleteTask(task.id)">
+                                    <i class="el-icon-delete"></i>
+                                    <div>删除任务</div> 
+                                </li>
+                               
+                            </ul>
+                        </el-popover>
+                    </div>
                 </div>
-                <div class="task_project">
-                    <div class="colored_sign" :style="color && `background-color:${color};`"></div>
-                    <span>{{taskProjectName}}</span>
+                <div class="task_meta">
+                    <div class="task_due_date">
+                        <i class="el-icon-date"></i>
+                        {{taskDueDate}}
+                    </div>
+                    <div class="task_project">
+                        <div class="colored_sign" :style="color && `background-color:${color};`"></div>
+                        <span>{{taskProjectName}}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,12 +53,17 @@
     import dayjs from "dayjs";
     import Project from "@/lib/Project";
     import Block from "@/lib/Block";
+    import TaskEditor from "@/components/TaskEditor.vue";
 
-    @Component
+    @Component({
+        components: {TaskEditor}
+    })
     export default class TaskListItem extends Vue{
         
         @Prop({required: true})
         task!: Task;
+
+        isEditing = false;
 
         get taskProjectName():string {
             if(this.task.project_id === "-1") {
@@ -108,8 +122,12 @@
 @import "~@/assets/style/common.scss";
 .task_list_item {
     display: flex;
+    flex-direction: column;
     width: 100%;
-    // height: 56px;
+}
+
+.task_info {
+    display: flex;
     padding: 8px;
 }
 
@@ -128,7 +146,6 @@
         & .task_content {
             font-size: 14px;
             color: #4a4754;
-            // line-height: 20px;
         }
 
         & .task_operation {
@@ -199,13 +216,11 @@
 }
 
 .operation_list {
-    
     & > li {
         display: flex;
         align-items: center;
         justify-content: center;
         line-height: 16px;
-        // text-align: center;
         padding: 8px;
         & div {
             padding-left: 4px;
