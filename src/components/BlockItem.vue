@@ -9,9 +9,11 @@
            >
            <ul class="operate_items">
                <li @click="isEditing = true">
+                   <i class="el-icon-edit-outline"></i>
                    修改模块
                </li>
                <li @click="$emit('delete', blockId)">
+                   <i class="el-icon-delete"></i>
                    删除模块
                </li>
            </ul>

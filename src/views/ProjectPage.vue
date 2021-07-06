@@ -14,7 +14,7 @@
             </li>
         </ul>
         <div class="addBlockEditor" v-if="blockEditorVisible">
-            <el-input v-model="newBlockName" placeholder="请输入模块名称" style="margin-bottom:8px;"></el-input>
+            <el-input v-model="newBlockName" placeholder="请输入模块名称" style="margin-bottom:8px;" @keyup.enter.native="addBlock(projectId)"></el-input>
             <el-button type="primary" :disabled="newBlockName === ''" @click="addBlock(projectId)">添加模块</el-button>
             <el-button @click="blockEditorVisible = !blockEditorVisible">取消</el-button>
         </div>
@@ -109,6 +109,7 @@
         }
 
         addBlock(projectId: string):void {
+            if(this.newBlockName === "") return;
             this.$store.commit("addBlock", {projectId: projectId, blockName: this.newBlockName});
             this.blockEditorVisible = false;
             // 清空输入框数据
@@ -148,7 +149,9 @@
        cursor: pointer;
    }
 }
-
+.addBlockEditor {
+    margin-top: 8px;
+}
 .addBlockEditor,.add_block_divider_container{
    width: 96%;
    float: right;
@@ -172,6 +175,7 @@
     }
     & .blockItem {
         flex-grow: 1;
+        margin-top: 18px;
     }
 }
 

@@ -2,13 +2,13 @@
     <nav>
         <Icon name="align-text-justify" class="align-text-justify" @click="$emit('toggleSidebar')"/>
         <div class="top_right_button_group">
-            <button class="addButton">
+            <!-- <button class="addButton">
                 <span>添加任务</span>
                 <Icon name="plus-circle" class="plus-circle" />
-            </button>
-            <div class="bell_container">
+            </button> -->
+            <!-- <div class="bell_container">
                 <Icon name="bell" class="bell" />
-            </div>
+            </div> -->
             
             <img src="@/assets/Avatar.png" alt="">
         </div>
@@ -98,5 +98,8 @@ nav {
 .top_right_button_group img {
     width: 48px;
     height: 48px;
+    &:hover {
+        cursor: pointer;
+    }
 }
 </style>

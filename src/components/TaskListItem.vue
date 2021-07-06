@@ -10,7 +10,7 @@
                 <div class="task_container">
                     <div class="task_content">{{task.content}}</div>
                     <div class="task_operation">
-                        <i class="el-icon-more" v-popover:operation-popover></i>
+                        <i class="el-icon-more icon-more" v-popover:operation-popover></i>
                         <el-popover
                             placement="bottom"
                             width="200"
@@ -109,10 +109,20 @@
 
         deleteTask(id:string):void {
             this.$store.commit("deleteTask",id);
+            this.$message({
+                 message: '删除成功',
+                 type: 'info',
+                 showClose: true,
+            });
         }
 
         finishTask(id:string):void {
             this.$store.commit("finishTask",id);
+            this.$message({
+                 message: '任务已完成',
+                 type: 'success',
+                 showClose: true,
+            });
         }
 
     }
@@ -189,7 +199,9 @@
         height:1px;
     }
 }
-
+.icon-more:hover {
+    cursor: pointer;
+}
 .check_box_circle {
     width: 18px;
     height: 18px;

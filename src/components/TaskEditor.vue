@@ -9,7 +9,7 @@
                 closable
                 disable-transitions
                 @close="closeTag">{{selectedTagName}}</el-tag>
-            <input type="text" v-model = "task_content" width="100%" placeholder="请输入任务内容，例如：慢跑半小时">
+            <input type="text" v-model = "task_content" width="100%" @keyup.enter="saveTask" placeholder="请输入任务内容，例如：慢跑半小时">
         </div>
         
         <div class="task_meta">
@@ -204,6 +204,7 @@
         }
 
         saveTask():void {
+            if(this.task_content === "") return;
             if(this.task_id === undefined) {
                 const task = new Task();
                 task.content = this.task_content;
