@@ -13,14 +13,14 @@
                             @update:blockName="modifyBlock($event,item.block.id)" />
             </li>
         </ul>
-        <div class="addBlockEditor" v-if="blockEditorVisible">
+        <!-- <div class="addBlockEditor" v-if="blockEditorVisible">
             <el-input v-model="newBlockName" placeholder="请输入模块名称" style="margin-bottom:8px;" @keyup.enter.native="addBlock(projectId)"></el-input>
             <el-button type="primary" :disabled="newBlockName === ''" @click="addBlock(projectId)">添加模块</el-button>
             <el-button @click="blockEditorVisible = !blockEditorVisible">取消</el-button>
         </div>
         <div class="add_block_divider_container" @click="blockEditorVisible = true" v-if="!blockEditorVisible">
             <el-divider content-position="center" class="divider">添加模块</el-divider>
-        </div>
+        </div> -->
         
     </div>
 </template>
