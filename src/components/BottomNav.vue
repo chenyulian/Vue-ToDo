@@ -2,8 +2,12 @@
     <div class="bottom-nav">
         <ul class="bottom-nav-list">
             <li :class="selected === 1?'selected':''" @click="select(1)"><Icon name="todo" class="icon-todo" /><span>待办</span></li>
-            <li :class="selected === 2?'selected':''" @click="select(2)"><Icon name="project" class="icon-todo" /><span>项目</span></li>
-            <li :class="selected === 3?'selected':''" @click="select(3)"><Icon name="statistics" class="icon-todo" /><span>数据</span></li>
+            <li :class="selected === 2?'selected':''" @click="select(2)"><Icon name="project" class="icon-todo" />
+                <span>项目</span>
+            </li>
+            <li :class="selected === 3?'selected':''" @click="select(3)"><Icon name="statistics" class="icon-todo" />
+                <span>数据</span>
+            </li>
             <li :class="selected === 4?'selected':''" @click="select(4)"><Icon name="about" class="icon-todo" /><span>关于</span></li>
         </ul>
         <div class="nav-selected-color" :class="`selected-${selected}`"></div>
@@ -19,16 +23,16 @@
         select(index: number):void {
             this.selected = index;
             if(this.selected === 1) {
-            this.$router.push("/today");
+                this.$router.push("/today");
             }
             if(this.selected === 2) {
-            this.$router.push("/projects/2");
+                this.$router.push("/projects");
             }
             if(this.selected === 3) {
-            this.$router.push("/stats");
+                this.$router.push("/stats");
             }
             if(this.selected === 4) {
-            this.$router.push("/about");
+                this.$router.push("/about");
             }
         }
     }
@@ -39,6 +43,7 @@
 @import "~@/assets/style/common.scss";
 
 $seletedWidth: 76px;
+$projectWidth: 96px;
 $spacing: calc((100vw - 4 * #{$seletedWidth}) / 5);
 .bottom-nav {
   display: none;
