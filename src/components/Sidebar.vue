@@ -64,10 +64,17 @@
 .sidebar {
     max-width: 320px;
     min-height: 100vh;
-    // position: fixed;
-    // left:0;
-    // top:0;
-    -moz-box-shadow:1px 1px 2px #E8E8EA; -webkit-box-shadow:1px 1px 2px #E8E8EA; box-shadow:1px 1px 2px #E8E8EA;
+    position: fixed;
+    left:0;
+    top:0;
+    background: white;
+    z-index: 2;
+    -moz-box-shadow:1px 1px 2px #E8E8EA; 
+    -webkit-box-shadow:1px 1px 2px #E8E8EA; 
+    box-shadow:1px 1px 2px #E8E8EA;
+    @media (max-width:500px) {
+        display: none;
+    }
 }
 
 .list_holder {

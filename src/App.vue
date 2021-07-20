@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" />
-    <div class="content_container">
+    <main>
       <transition name="slide-fade">
         <Sidebar v-if="isShowSidebar"
                :addProjectDialogVisible.sync="addProjectDialogVisible"/>
@@ -11,18 +11,19 @@
 
       <!-- dialogs -->
       <add-project-dialog :visible.sync="addProjectDialogVisible" />
-
-    </div>    
+     
+      <BottomNav />
+    </main>
   </div>
 </template>
-
+ 
 <script lang="ts">
-import Vue from "vue"
+import Vue from "vue";
 import Component from "vue-class-component";
 import AddProjectDialog from "@/components/dialogs/AddProjectDialog.vue";
-
+import BottomNav from "@/components/BottomNav.vue";
 @Component({
-  components: {AddProjectDialog}
+  components: {AddProjectDialog, BottomNav}
 })
 export default class App extends Vue {
   isShowSidebar = true;
@@ -44,15 +45,16 @@ export default class App extends Vue {
     background: white;
   }
 
-.content_container {
+main {
   display: flex;
+  // border: 1px solid red;
+  height: 100vh;
 }
 
 .content {
   width: 100%;
   padding-top: 100px;
 }
-
 .slide-fade-enter-active {
   transition: all .3s ease
 }

@@ -1,6 +1,6 @@
 <template>
     <nav>
-        <Icon name="align-text-justify" class="align-text-justify" @click="$emit('toggleSidebar')"/>
+        <!-- <Icon name="align-text-justify" class="align-text-justify" @click="$emit('toggleSidebar')"/> -->
         <div class="top_right_button_group">
             <!-- <button class="addButton">
                 <span>添加任务</span>
@@ -29,13 +29,13 @@
 @import "~@/assets/style/common.scss";
 nav {
     height: 80px;
-    position:absolute;
+    position:fixed;
     top:0;
     left:0;
     width: 100vw;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .align-text-justify {
@@ -97,7 +97,7 @@ nav {
 
 .top_right_button_group img {
     width: 48px;
-    height: 48px;
+    height: 48px;    
     &:hover {
         cursor: pointer;
     }
