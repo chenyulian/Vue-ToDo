@@ -63,14 +63,14 @@
 <style lang="scss" scoped>
 @import '~@/assets/style/common.scss';
 
-.today {
-    padding-left: 24px;
-    padding-right: 24px;
-    max-width: 746px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 24px;
-}
+// .today {
+//     padding-left: 24px;
+//     padding-right: 24px;
+//     max-width: 746px;
+//     margin-left: auto;
+//     margin-right: auto;
+//     margin-top: 24px;
+// }
 
 .task_list > ul > li hr {
     border:0;

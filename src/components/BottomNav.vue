@@ -24,15 +24,19 @@
             this.selected = index;
             if(this.selected === 1) {
                 this.$router.push("/today");
+                // this.$emit("goto", "/today")
             }
             if(this.selected === 2) {
                 this.$router.push("/projects");
+                // this.$emit("goto", "/projects")
             }
             if(this.selected === 3) {
                 this.$router.push("/stats");
+                // this.$emit("goto", "/stats")
             }
             if(this.selected === 4) {
                 this.$router.push("/about");
+                // this.$emit("goto", "/about")
             }
         }
     }
@@ -47,12 +51,16 @@ $projectWidth: 96px;
 $spacing: calc((100vw - 4 * #{$seletedWidth}) / 5);
 .bottom-nav {
   display: none;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 64px;
+//   position: absolute;
+//   bottom: 0;
+//   left: 0;
+  flex: 0 0 64px;
+  position: relative;
+//   height: 64px;
   width: 100vw;
   border-top: 1px solid #E8E8EA;
+  background: white;
+  z-index: 2;
   @media (max-width:500px) {
     display: block;
   }

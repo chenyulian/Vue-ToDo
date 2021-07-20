@@ -8,11 +8,10 @@
       </transition>
       
       <router-view class="content" />
-
+      <BottomNav />
       <!-- dialogs -->
       <add-project-dialog :visible.sync="addProjectDialogVisible" />
-     
-      <BottomNav />
+    
     </main>
   </div>
 </template>
@@ -49,11 +48,21 @@ main {
   display: flex;
   // border: 1px solid red;
   height: 100vh;
+  flex-direction: column;
 }
 
 .content {
   width: 100%;
   padding-top: 100px;
+  border: 1px solid red;
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 746px;
+  margin-left: auto;
+  margin-right: auto;
+  // margin-top: 24px;
+  flex-grow: 1;
+  overflow: auto;
 }
 .slide-fade-enter-active {
   transition: all .3s ease

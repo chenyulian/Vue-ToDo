@@ -128,14 +128,14 @@
 
 <style lang="scss" scoped>
 @import "~@/assets/style/common.scss";
-.projectPage {
-    padding-left: 24px;
-    padding-right: 24px;
-    max-width: 746px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 24px;
-}
+// .projectPage {
+//     padding-left: 24px;
+//     padding-right: 24px;
+//     max-width: 746px;
+//     margin-left: auto;
+//     margin-right: auto;
+//     margin-top: 24px;
+// }
 
 .add_block_divider_container {
    height: 32px;
