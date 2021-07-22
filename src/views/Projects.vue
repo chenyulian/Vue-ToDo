@@ -1,35 +1,61 @@
 <template>
     <div class="projects">
         <h2>项目</h2>
-        <ul class="filters">
+        <!-- <ul class="filters">
             <li class="selected">全部</li>
             <li>进行中</li>
             <li>已完成</li>
-        </ul>
+        </ul> -->
         <ul class="project-list">
             <li>
                 <div class="project_left">
-                    <div class="name"><strong>项目名称1234567890123456789012345678901234567890</strong></div>
-                    <div class="info">还剩2个任务</div>
+                    <div class="name"><strong>收集箱</strong></div>
+                    <div class="info">还剩<span>{{taskNumber["-1"]}}</span>个任务</div>
                 </div>
                 <div class="progress">占位222</div>
                 <div><Icon name="more" class="more" /></div>
             </li>
-            <li>zz</li>
-            <li>zz</li>
-            <li>zz</li>
-            <li>zz</li> 
+            <li v-for="project in projectList" :key="project.id" :style="{backgroundColor: project.color}">
+                <div class="project_left">
+                    <div class="name"><strong>{{project.name}}</strong></div>
+                    <div class="info">还剩<span>{{taskNumber[project.id]}}</span>个任务</div>
+                </div>
+                <div class="progress">占位222</div>
+                <div @click="$router.push(`/projects/${project.id}`)"><Icon name="more" class="more" /></div>
+            </li>
         </ul>
+        <div class="button-container">
+            <el-button type="primary" icon="el-icon-plus" circle></el-button>
+        </div>
     </div>
+    
 </template>
 
 <script lang="ts">
+import Project from "@/lib/Project";
+import Task from "@/lib/Task";
 import Vue from "vue";
 import Component from "vue-class-component";
 
     @Component
     export default class Projects extends Vue {
-        
+
+        projectList:Project[] = [];
+        taskNumber = {}
+
+        created():void {
+            this.$store.commit("fetchProjectList");
+            this.$store.commit("fetchTaskList");
+            this.projectList = this.$store.state.projectList as Project[];
+            const taskList = this.$store.state.taskList as Task[];
+            for(let project of this.projectList) {
+                let taskNumber = taskList.filter(i => i.project_id === project.id && i.status === 1).length;
+                Object.defineProperty(this.taskNumber, project.id, {value: taskNumber});
+            }
+            Object.defineProperty(this.taskNumber, 
+                                "-1", 
+                                {value: taskList.filter(i => i.project_id === "-1" && i.status === 1).length} || 0);
+        }
     }
 </script>
 
@@ -81,12 +107,17 @@ import Component from "vue-class-component";
             margin-bottom: 24px;
             padding: 4px 16px;
             display: flex;
+
+            // & > div {
+            //     border: 1px solid red;
+            // }
             & > div:first-child {
                 flex-grow: 1;
             }
 
             & .progress {
                 padding: 4px;
+                margin-right: 4px;
             }
             & .more {
                 width: 1.5em;
@@ -108,6 +139,14 @@ import Component from "vue-class-component";
             }
 
             align-items: center;
+        }
+    }
+    .button-container {
+        position: absolute;
+        right: 24px;
+        bottom: 72px;
+        & > button {
+            background: #686A9A;
         }
     }
 </style>

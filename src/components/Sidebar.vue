@@ -2,8 +2,8 @@
     <div class="sidebar">
         <div class="list_holder">
             <ul class="list">
-                <li><sidebar-list-item link="/today" linkText="今日" elIconClassName="news"/></li>
-                <li><sidebar-list-item link="/schedule" linkText="日程" elIconClassName="date" /></li>
+                <li><sidebar-list-item link="/today" linkText="待办" elIconClassName="todo"/></li>
+                <!-- <li><sidebar-list-item link="/schedule" linkText="日程" elIconClassName="date" /></li> -->
             </ul>
             <div class="projects_container">
                 <div class="list_title">
@@ -22,8 +22,8 @@
                 </ul>
             </div>
             <ul class="list">
-                <li><sidebar-list-item link="/record" linkText="记录" elIconClassName="data-line"/></li>
-                <li><sidebar-list-item link="/settings" linkText="设置" elIconClassName="setting"/></li>
+                <li><sidebar-list-item link="/stats" linkText="数据" elIconClassName="statistics"/></li>
+                <li><sidebar-list-item link="/about" linkText="关于" elIconClassName="about" class="icon"/></li>
             </ul>
         </div>
     </div>
@@ -110,5 +110,6 @@
     max-height: 550px;
     overflow:auto;
 }
+
 
 </style>

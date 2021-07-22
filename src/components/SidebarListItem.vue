@@ -6,7 +6,8 @@
                 class="sidebar-list-item"
                 active-class="selected"
                 v-popover:fullText>
-                    <i v-if="elIconClassName" :class="`el-icon-${elIconClassName}`"></i>
+                    <!-- <i v-if="elIconClassName" :class="`el-icon-${elIconClassName}`"></i> -->
+                    <Icon v-if="elIconClassName" :name="elIconClassName" class="icon" />
                     <div v-else class="colored_sign" :style="`background-color:${projectColor};`"></div>
                     <div class="linkText">{{linkText}}</div>
                     <div class="operate" v-popover:operate v-if="projectId"><i class="el-icon-more"></i></div>
@@ -123,6 +124,11 @@
             cursor: pointer;
         }
     }
+}
+
+.icon {
+    width: 1.5em;
+    height: 1.5em;
 }
 
 </style>
