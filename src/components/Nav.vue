@@ -36,6 +36,9 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    // @media (max-width: 500px) {
+    //     display: none;
+    // }
 }
 
 .align-text-justify {

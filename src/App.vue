@@ -54,7 +54,6 @@ main {
 .content {
   width: 100%;
   padding-top: 100px;
-  border: 1px solid red;
   padding-left: 24px;
   padding-right: 24px;
   max-width: 746px;
@@ -62,7 +61,10 @@ main {
   margin-right: auto;
   // margin-top: 24px;
   flex-grow: 1;
-  overflow: auto;
+  overflow: hidden;
+  @media (max-width: 500px) {
+    padding-top: 48px;
+  }
 }
 .slide-fade-enter-active {
   transition: all .3s ease
