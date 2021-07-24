@@ -1,7 +1,7 @@
 <template>
     <div class="bottom-nav">
         <ul class="bottom-nav-list">
-            <li :class="selected === 1?'selected':''" @click="select(1)"><Icon name="todo" class="icon-todo" /><span>待办</span></li>
+            <li :class="selected === 1?'selected':''" @click="select(1)"><Icon name="todo" class="icon-todo" /><div>待办</div></li>
             <li :class="selected === 2?'selected':''" @click="select(2)"><Icon name="project" class="icon-todo" />
                 <span>项目</span>
             </li>
@@ -50,71 +50,111 @@ $seletedWidth: 76px;
 $projectWidth: 96px;
 $spacing: calc((100vw - 4 * #{$seletedWidth}) / 5);
 .bottom-nav {
-  display: none;
+//   display: none;
 //   position: absolute;
 //   bottom: 0;
 //   left: 0;
-  flex: 0 0 64px;
+//   width: 320px;
+  
   position: relative;
-//   height: 64px;
-  width: 100vw;
-  border-top: 1px solid #E8E8EA;
+  padding: 120px 8px;
+//   
+  
+//   
+//   border: 1px solid red;
   background: white;
   z-index: 2;
-  @media (max-width:500px) {
-    display: block;
-  }
+  border-right: 1px solid #E8E8EA;
+  border-top:none;
+   @media (max-width: 500px) {
+       flex: 0 0 64px;
+       width: 100vw;
+       border-top: 1px solid #E8E8EA;
+       border-right:none;
+       padding: 0;
+   }
   .nav-selected-color {
+      display: none;
     position: absolute;
-    width: $seletedWidth;
-    height: 36px;
-    left: 0px;
-    top: 14px;
-    transform: translateX($spacing);
     background: #e4e8f4;
     border-radius: 8px;
-    &.seleted-1 {
-      transform: translateX($spacing);
-    }
-    &.selected-2 {
-      transform: translateX(calc(#{$spacing} * 2 + #{$seletedWidth}));
-    }
-    &.selected-3 {
-      transform: translateX(calc(#{$spacing} * 3 + #{$seletedWidth} * 2));
-    }
-    &.selected-4 {
-      transform: translateX(calc(#{$spacing} * 4 + #{$seletedWidth} * 3));
-    }
-    transition: transform 250ms cubic-bezier(0.645, 0.045, 0.355, 1);
+    height: 36px;
+    @media (max-width: 500px) {
+        display: block;
+        width: $seletedWidth;
+        left: 0px;
+        top: 14px;
+        transform: translateX($spacing);
+        
+        &.seleted-1 {
+            transform: translateX($spacing);
+        }
+        &.selected-2 {
+            transform: translateX(calc(#{$spacing} * 2 + #{$seletedWidth}));
+        }
+        &.selected-3 {
+            transform: translateX(calc(#{$spacing} * 3 + #{$seletedWidth} * 2));
+        }
+        &.selected-4 {
+            transform: translateX(calc(#{$spacing} * 4 + #{$seletedWidth} * 3));
+        }
+            transition: transform 250ms cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
   }
   & > ul  {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    padding: 0 24px;
     align-items: center;
     height: 100%;
-    padding: 0 $spacing;
     & > li {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      z-index: 1;
-      border-radius: 8px;
-      font-weight: 600;
-      color:#ccd0e0;
-      font-family: $font-hei;
-      padding: 8px 12px;
-      
-      & .icon-todo {
-        width: 1.5em;
-        height: 1.5em;
-        margin-right: 4px;
-      }
+        // border: 1px solid blue;
+        display: flex;
+        // justify-content: space-between;
+        flex-wrap: nowrap;
+        padding: 6px 16px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color:#ccd0e0;
+        font-family: $font-hei;
+        font-size: 14px;
+        border-radius: 8px;
+         & .icon-todo {
+            width: 1.5em;
+            height: 1.5em;
+            margin-right: 100px;
+        }
 
-      &.selected {
-        color: #37429B;
-      }
+        &.selected {
+            color: #37429B;
+            //  background:#ccd0e0;;
+        }
+
+        &:hover {
+            cursor: pointer;
+            color: #37429B;
+        }
     }
+
+    @media (max-width: 500px) {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0 $spacing;
+        & > li {
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            margin-bottom: 0;
+            padding: 8px 12px;
+            &.selected {
+                background:none;
+            }
+             & .icon-todo {
+                margin-right: 4px;
+             }
+        }
+    }
+    
   }
 }
 </style>

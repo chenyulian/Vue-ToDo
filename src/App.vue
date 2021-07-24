@@ -2,10 +2,10 @@
   <div id="app">
     <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" />
     <main>
-      <transition name="slide-fade">
+      <!-- <transition name="slide-fade">
         <Sidebar v-if="isShowSidebar"
                :addProjectDialogVisible.sync="addProjectDialogVisible"/>
-      </transition>
+      </transition> -->
       
       <router-view class="content" />
       <BottomNav />
@@ -48,7 +48,11 @@ main {
   display: flex;
   // border: 1px solid red;
   height: 100vh;
-  flex-direction: column;
+  // 
+  flex-direction: row-reverse;
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 .content {

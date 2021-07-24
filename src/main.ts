@@ -9,7 +9,8 @@ import Icon from './components/Icon.vue';
 import TaskEditor from './components/TaskEditor.vue';
 import { Button, Dialog, Select, Option, FormItem, Form, Input, Popover,
          DatePicker, Radio, RadioGroup, Cascader, Switch, Table, TableColumn,
-         Tooltip, Tag,Divider,ColorPicker,Calendar, Timeline, TimelineItem, Message} from 'element-ui';
+         Tooltip, Tag,Divider,ColorPicker,Calendar, Timeline, TimelineItem, Message,
+        Carousel, CarouselItem} from 'element-ui';
 // import NewTaskDialog from '@/components/NewTaskDialog.vue'
 
 Vue.config.productionTip = false;
@@ -39,7 +40,9 @@ Vue.component(ColorPicker.name, ColorPicker);
 Vue.component(Calendar.name, Calendar);
 Vue.component(Timeline.name, Timeline);
 Vue.component(TimelineItem.name, TimelineItem);
-
+Vue.component(Carousel.name, Carousel);
+Vue.component(CarouselItem.name, CarouselItem);
+// Vue.component(Checkbox.name, Checkbox);
 Vue.prototype.$message = Message;
 // Vue.component('NewTaskDialog', NewTaskDialog);
 
