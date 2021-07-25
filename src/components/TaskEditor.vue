@@ -296,8 +296,8 @@
     flex-direction: column;
     padding: 8px 0;
     margin-top: 8px;
-    border: 1px solid #DCDFE6;
-    border-radius: 5px;
+    // border: 1px solid #DCDFE6;
+    // border-radius: 5px;
 }
 
 .task_edit_container {

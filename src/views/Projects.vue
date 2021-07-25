@@ -46,21 +46,23 @@
         </div>
         <h2>任务</h2>
         <ul class="task-list">
-            <li v-for="task in taskList" :key="task.id">
+            <!-- <li v-for="task in taskList" :key="task.id">
                 <div class="check-box" @click="finishTask(task.id)">
                     <Icon name="tick" class="tick" />
                 </div>
                 <div class="task-content">{{task.content}}</div>
                 <div class="operations">
-                    <Icon name="edit" class="operate" />
-                    <Icon name="del" class="operate" />
+                    <Icon name="edit" class="operate" @click="editTask(task.id)" />
+                    <Icon name="del" class="operate" @click="deleteTask(task.id)" />
                 </div>
+            </li> -->
+            <li v-for="task in taskList" :key="task.id">
+                <task-item :taskId="task.id" :showProjectName="false"/>
             </li>
         </ul>
 
+        <!-- <task-dialog /> -->
     </div>
-
-    
 </template>
 
 <script lang="ts">
@@ -68,8 +70,12 @@ import Project from "@/lib/Project";
 import Task from "@/lib/Task";
 import Vue from "vue";
 import Component from "vue-class-component";
-
-    @Component
+import TaskDialog from "@/components/dialogs/TaskDialog.vue";
+import TaskItem from "@/components/TaskItem.vue";
+    @Component({
+            components: {TaskDialog,TaskItem}
+        }
+    )
     export default class Projects extends Vue {
 
         projectList:Project[] = [];
@@ -105,6 +111,19 @@ import Component from "vue-class-component";
             } else {
                 this.projectId = this.projectList[index - 1].id;
             }
+        }
+
+        editTask(id:string):void {
+            console.log(id)
+        }
+
+        deleteTask(id:string):void {
+            this.$store.commit("deleteTask",id);
+            this.$message({
+                 message: '删除成功',
+                 type: 'info',
+                 showClose: true,
+            });
         }
 
         finishTask(id:string):void {
@@ -235,36 +254,36 @@ import Component from "vue-class-component";
     overflow: auto;
     margin-bottom: 12px;
     & > li {
-        border: 1px solid #E3E6F4;
-        padding: 4px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        &:not(&:first-child) {
-            margin-top: 12px;
-        }
-        &:hover {
-            background: #F6F8FC;
-        }
+        // border: 1px solid #E3E6F4;
+        padding: 4px 0;
+        // border-radius: 6px;
+        // display: flex;
+        // align-items: center;
+        // &:not(&:first-child) {
+        //     margin-top: 6px;
+        // }
+        // &:hover {
+        //     background: #F6F8FC;
+        // }   
 
-        & .task-content {
-            flex-grow: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-left: 8px;
-            padding-right: 8px;
-        }
+        // & .task-content {
+        //     flex-grow: 1;
+        //     white-space: nowrap;
+        //     overflow: hidden;
+        //     text-overflow: ellipsis;
+        //     padding-left: 8px;
+        //     padding-right: 8px;
+        // }
 
-        & .operations {
-            flex-shrink: 0;
-            & > .operate {
-                margin-right: 4px;
-                &:hover {
-                    cursor: pointer;
-                }
-            }
-        }
+        // & .operations {
+        //     flex-shrink: 0;
+        //     & > .operate {
+        //         margin-right: 8px;
+        //         &:hover {
+        //             cursor: pointer;
+        //         }
+        //     }
+        // }
     }
 }
 

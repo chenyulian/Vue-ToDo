@@ -11,7 +11,6 @@
       <BottomNav />
       <!-- dialogs -->
       <add-project-dialog :visible.sync="addProjectDialogVisible" />
-    
     </main>
   </div>
 </template>
