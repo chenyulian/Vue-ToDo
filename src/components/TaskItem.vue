@@ -1,5 +1,5 @@
 <template>
-    <div class="task_item" :class="{isEditing: isEditing}">
+    <div class="task_item" :class="{isEditing: isEditing}" @dblclick="isEditing = true">
         <task-editor :project_id="task.project_id" :block_id="task.block_id" :task_id="task.id" v-if="isEditing"
             @cancel = "isEditing = false" @finish="isEditing = false" />
         <div class="task-container" v-else>
@@ -9,8 +9,8 @@
                 </div>
                 <div class="task-content">{{task.content}}</div>
                 <div class="task-operation">
-                    <i class="el-icon-more icon-more" v-popover:operation-popover></i>
-                    <el-popover
+                    <i class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
+                    <!-- <el-popover
                         placement="bottom"
                         width="200"
                         trigger="click"
@@ -26,7 +26,7 @@
                             </li>
                             
                         </ul>
-                    </el-popover>
+                    </el-popover> -->
                 </div>
             </div>
              
@@ -180,6 +180,7 @@
             & > .task-info {
                 margin-top: 0 !important;
                 margin-right: 4px;
+                margin-left: 0;
                 
                 & > .task-project {
                     margin-left: 4px;
@@ -210,6 +211,12 @@
                 &:hover {
                     cursor: pointer;
                 }
+
+                & .icon-edit {
+                    &:hover {
+                        color: $color-theme;
+                    }
+                }
             }
         }
 
@@ -219,6 +226,7 @@
             align-items: center;
             flex-shrink: 0;
             margin-top: 8px;
+            margin-left: 18px;
             font-size: 12px;
             color: $color-font-secondary;
         }

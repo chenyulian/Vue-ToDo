@@ -62,11 +62,12 @@
            
            <div class="task_meta_quick_settings">
                <ul>
-                   <li>
-                       <el-tooltip class="item" effect="dark" content="选择标签" placement="bottom">
-                        <i class="el-icon-collection-tag icon_tag" v-popover:tags-popover></i>
+                   <li v-if="task_id">
+                       <el-tooltip class="item" effect="dark" content="删除任务" placement="bottom">
+                        <!-- <i class="el-icon-delete icon_tag"></i> -->
+                        <i class="el-icon-delete icon_delete" v-popover:tags-popover></i>
                        </el-tooltip>
-                       <el-popover
+                       <!-- <el-popover
                             placement="bottom"
                             title="标签"
                             width="200"
@@ -76,7 +77,7 @@
                             <ul class="tags">
                                 <li v-for="tag in tags" :key="tag.id" @click="selectTag(tag.name)">{{tag.name}}</li>
                             </ul>
-                        </el-popover>
+                        </el-popover> -->
                     </li>
                </ul>
            </div>
@@ -295,8 +296,9 @@
     display: flex;
     flex-direction: column;
     padding: 8px 0;
-    margin-top: 8px;
-    // border: 1px solid #DCDFE6;
+    // margin-top: 8px;
+    background: white;
+    // border: 1px solid red;
     // border-radius: 5px;
 }
 
@@ -336,9 +338,10 @@
     padding: 8px 10px;
 }
 
-.icon_tag,.icon_flag {
+.icon_delete,.icon_flag {
     color: $color-font-occupation;
     margin: 0;
+    font-size: 16px;
     &:hover {
         cursor: pointer;
         color:$color-theme;
