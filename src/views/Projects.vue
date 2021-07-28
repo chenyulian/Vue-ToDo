@@ -1,6 +1,10 @@
 <template>
     <div class="projects">
-        <h2>项目</h2>
+        <header>
+            <h2>项目</h2>
+            <el-button type="primary" round @click="openAddProjectDialog">添加项目</el-button>
+        </header>
+                
         <!-- <ul class="filters">
             <li class="selected">全部</li>
             <li>进行中</li>
@@ -44,24 +48,17 @@
                 </el-carousel-item>
             </el-carousel>
         </div>
-        <h2>任务</h2>
+        <h2 style="margin-top: 12px;">任务</h2>
         <ul class="task-list">
-            <!-- <li v-for="task in taskList" :key="task.id">
-                <div class="check-box" @click="finishTask(task.id)">
-                    <Icon name="tick" class="tick" />
-                </div>
-                <div class="task-content">{{task.content}}</div>
-                <div class="operations">
-                    <Icon name="edit" class="operate" @click="editTask(task.id)" />
-                    <Icon name="del" class="operate" @click="deleteTask(task.id)" />
-                </div>
-            </li> -->
             <li v-for="task in taskList" :key="task.id">
                 <task-item :taskId="task.id" :showProjectName="false"/>
             </li>
         </ul>
-
-        <!-- <task-dialog /> -->
+        <div class="add_task">
+            <task-editor class="editor"
+             v-if="isAdding" @cancel="isAdding = false" @finish="isAdding = false"  />
+            <add-task-button v-else @click="isAdding = true"/>
+        </div>
     </div>
 </template>
 
@@ -72,36 +69,42 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import TaskDialog from "@/components/dialogs/TaskDialog.vue";
 import TaskItem from "@/components/TaskItem.vue";
+import AddTaskButton from "@/components/AddTaskButton.vue";
+import { openDialog } from "@/lib/openDialog";
+
     @Component({
-            components: {TaskDialog,TaskItem}
+            components: {TaskDialog,TaskItem,AddTaskButton}
         }
     )
     export default class Projects extends Vue {
 
-        projectList:Project[] = [];
-        // taskList: Task[] = []; 
+        // projectList:Project[] = [];
         projectId = "-1";
-        taskNumber = {}
+        taskNumber = {};
+        isAdding = false;
 
         created():void {
             this.$store.commit("fetchProjectList");
             this.$store.commit("fetchTaskList");
-            this.projectList = this.$store.state.projectList as Project[];
-            const taskList = this.$store.state.taskList as Task[];
-            for(let project of this.projectList) {
-                let taskNumber = taskList.filter(i => i.project_id === project.id && i.status === 1).length;
-                Object.defineProperty(this.taskNumber, project.id, {value: taskNumber});
-            }
-            Object.defineProperty(this.taskNumber, 
-                                "-1", 
-                                {value: taskList.filter(i => i.project_id === "-1" && i.status === 1).length} || 0);
+            // this.projectList = this.$store.state.projectList as Project[];
+            // const taskList = this.$store.state.taskList as Task[];
+            // for(let project of this.projectList) {
+            //     let taskNumber = taskList.filter(i => i.project_id === project.id && i.status === 1).length;
+            //     Object.defineProperty(this.taskNumber, project.id, {value: taskNumber});
+            // }
+            // Object.defineProperty(this.taskNumber, 
+            //                     "-1", 
+            //                     {value: taskList.filter(i => i.project_id === "-1" && i.status === 1).length} || 0);
 
-            // console.log(this.taskList)
         }
 
         get taskList():Task[] {
             const taskList = this.$store.state.taskList as Task[];
             return taskList.filter(i => i.project_id === this.projectId && i.status === 1);
+        }
+
+        get projectList():Project[] {
+            return this.$store.state.projectList as Project[];
         }
 
         change(index: number):void {
@@ -134,26 +137,33 @@ import TaskItem from "@/components/TaskItem.vue";
                  showClose: true,
             });
         }
+
+        openAddProjectDialog():void {
+            openDialog();
+            // console.log('xxx')
+        }
     }
 </script>
 
 <style lang="scss" scoped>
+@import '~@/assets/style/common.scss';
+
 .projects {
     display: flex;
     flex-direction: column;
+
+    & > header {
+        display: flex;
+        justify-content: space-between;
+    }
 }
 .filters {
     display: flex;
     height: 48px;
     align-items: center;
     justify-content: space-between;
-    // padding: 0 36px;
     margin-top: 16px;
     & > li {
-        // border: 1px solid red;
-        // padding: 0 18px;
-        // height: 100%; 
-        // line-height: 48px;
         height: 48px;
         width: 86px;
         text-align: center;
@@ -172,7 +182,6 @@ import TaskItem from "@/components/TaskItem.vue";
 }
 
  .project-list {
-        
         margin-top: 16px;
         flex-grow: 1;
         overflow: auto;
@@ -213,8 +222,6 @@ import TaskItem from "@/components/TaskItem.vue";
         }
 
         @media (max-width: 500px) {
-            // display: flex;
-            // overflow: auto;
             & > li {
                 background: #37429B;
                 color: white;
@@ -237,9 +244,6 @@ import TaskItem from "@/components/TaskItem.vue";
 
 .el-carousel__item h3 {
     color: white;
-    // font-size: 18px;
-    // opacity: 0.75;
-    // line-height: 150px;
     font-weight: 600;
     letter-spacing: 0.1em;
     margin: 0;
@@ -254,36 +258,7 @@ import TaskItem from "@/components/TaskItem.vue";
     overflow: auto;
     margin-bottom: 12px;
     & > li {
-        // border: 1px solid #E3E6F4;
         padding: 4px 0;
-        // border-radius: 6px;
-        // display: flex;
-        // align-items: center;
-        // &:not(&:first-child) {
-        //     margin-top: 6px;
-        // }
-        // &:hover {
-        //     background: #F6F8FC;
-        // }   
-
-        // & .task-content {
-        //     flex-grow: 1;
-        //     white-space: nowrap;
-        //     overflow: hidden;
-        //     text-overflow: ellipsis;
-        //     padding-left: 8px;
-        //     padding-right: 8px;
-        // }
-
-        // & .operations {
-        //     flex-shrink: 0;
-        //     & > .operate {
-        //         margin-right: 8px;
-        //         &:hover {
-        //             cursor: pointer;
-        //         }
-        //     }
-        // }
     }
 }
 
@@ -307,5 +282,18 @@ import TaskItem from "@/components/TaskItem.vue";
 
 .tick {
     display: none;
+}
+
+.add_task {
+    margin-top: 8px;
+}
+
+.editor {
+    border: 1px solid $color-border-1;
+    border-radius: 4px;
+}
+
+.block {
+    margin-top: 12px;
 }
 </style>

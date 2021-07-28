@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" />
+    <!-- <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" /> -->
     <main>
       <!-- <transition name="slide-fade">
         <Sidebar v-if="isShowSidebar"

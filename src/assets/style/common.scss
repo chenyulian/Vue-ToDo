@@ -34,3 +34,39 @@ $color-border-4: #F2F6FC;
     display: block;
   }
 }
+
+.el-button {
+  &--default {
+      &:hover,&:focus {
+          color:  $color-theme;
+          border-color:  $color-theme;
+      }
+  }
+  &--text {
+      color: $color-theme;
+      &:hover {
+          color: #98a2d8;
+      }
+  }
+  &--primary {
+      background-color:  $color-theme;
+      border:  none;
+      color: white;
+      &:hover,&:focus {
+          color: white;
+          background-color: #98a2d8;
+      }
+      &[disabled] {
+          background-color: #b3bae2;
+          &:hover {
+            background-color: #b3bae2;
+          }
+      }
+  }
+}
+
+.el-input__inner {
+  &:focus {
+    border-color: #98a2d8;
+  }
+}

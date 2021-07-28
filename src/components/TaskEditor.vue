@@ -2,13 +2,6 @@
 <div class="task_editor" :class="isEditing===true?'isEditing':''">
     <div class="task_edit_container" :class="isEditing===true?'isEditing':''">
         <div class="content-container">
-            <el-tag 
-                v-if="selectedTagName!==''" 
-                type="primary" size="mini" 
-                class="tag" 
-                closable
-                disable-transitions
-                @close="closeTag">{{selectedTagName}}</el-tag>
             <input type="text" v-model = "task_content" width="100%" @keyup.enter="saveTask" placeholder="请输入任务内容，例如：慢跑半小时">
         </div>
         
@@ -64,27 +57,15 @@
                <ul>
                    <li v-if="task_id">
                        <el-tooltip class="item" effect="dark" content="删除任务" placement="bottom">
-                        <!-- <i class="el-icon-delete icon_tag"></i> -->
-                        <i class="el-icon-delete icon_delete" v-popover:tags-popover></i>
+                        <i class="el-icon-delete icon_delete" @click="deleteTask(task_id)"></i>
                        </el-tooltip>
-                       <!-- <el-popover
-                            placement="bottom"
-                            title="标签"
-                            width="200"
-                            trigger="click"
-                            ref="tags-popover"
-                            >
-                            <ul class="tags">
-                                <li v-for="tag in tags" :key="tag.id" @click="selectTag(tag.name)">{{tag.name}}</li>
-                            </ul>
-                        </el-popover> -->
                     </li>
                </ul>
            </div>
         </div>
         
     </div>
-    <div class="buttons_container">
+    <div class="buttons_container" style="margin-top: 4px;">
         <el-button type="primary" size="medium" class="add_button" @click="saveTask" :disabled="addButtonAvaliable">
             <i class="el-icon-circle-plus"
             ></i>
@@ -124,14 +105,7 @@
         _blockId!:string | null;
         projectName = "";
         blockName="";
-        selectedTagName = "";
         projectColor = "";
-
-        tags = [
-            {id: 1, name:"工作"},
-            {id: 2, name:"家务"},
-            {id: 3, name:"学习"}
-        ]
 
         created():void {
             this.$store.commit("fetchProjectList");
@@ -146,8 +120,6 @@
             const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
             if(task !== undefined) {
                 this.task_content = task.content;
-                // to fix Tag取值逻辑
-                this.selectedTagName = task.tags.length >= 0? task.tags[0]:"";
                 if(task.due_date) {
                     this.dueDate = new Date(task.due_date);
                 }
@@ -217,7 +189,7 @@
 
                 task.due_date = this.dueDate===null?null:this.dueDate.toString();
                 task.status = 1;
-                task.tags.push(this.selectedTagName);
+                // task.tags.push(this.selectedTagName);
                 this.$store.commit('addTask', task);
             } else {
                 const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
@@ -226,7 +198,7 @@
                     task.project_id = this._projectId;
                     task.block_id = this._blockId;
                     task.due_date = this.dueDate===null?null:this.dueDate.toString();
-                    task.tags.push(this.selectedTagName);
+                    // task.tags.push(this.selectedTagName);
                     this.$store.commit('updateTask', task);
                 }
             }
@@ -240,8 +212,6 @@
             this.projectName = this.getProjectById(this._projectId).name;
             this.projectColor = this.getProjectById(this._projectId).color;
             this.dueDate = new Date();
-            this.selectedTagName = "";
-
             this.$emit("finish");
         }
 
@@ -263,14 +233,15 @@
             this.moreVisible = false;
             this.projectColor = color;
         }
-       
-       selectTag(tagName:string):void {
-           this.selectedTagName = tagName;
-       }
 
-       closeTag():void {
-           this.selectedTagName = "";
-       }
+        deleteTask(taskId:string):void {
+            this.$store.commit("deleteTask",taskId);
+            this.$message({
+                 message: '删除成功',
+                 type: 'info',
+                 showClose: true,
+            });
+        }
 
        cancel():void {        
            // 清空数据
@@ -281,7 +252,6 @@
            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
            this.projectName = this.getProjectById(this._projectId).name;
            this.projectColor = this.getProjectById(this._projectId).color;
-           this.selectedTagName = "";
            this.$emit("cancel");
        }
 
@@ -298,8 +268,6 @@
     padding: 8px 0;
     // margin-top: 8px;
     background: white;
-    // border: 1px solid red;
-    // border-radius: 5px;
 }
 
 .task_edit_container {
@@ -365,17 +333,6 @@
     }
 }
 
-.tags {
-    & > li{
-        line-height: 32px;
-        text-align:center;
-        &:hover{
-            background:rgb(236,245,255);
-            cursor: pointer;
-        }
-    }
-}
-
 .projectList {
     padding: 8px;
     & > li {
@@ -419,4 +376,5 @@
         }
     }
 }
+
 </style>
