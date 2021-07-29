@@ -20,23 +20,29 @@
     @Component
     export default class BottomNav extends Vue {
         selected = 1;
+        
+        created():void {
+            console.log(this.$route.path);
+            if(this.$route.path === '/today') this.selected = 1;
+            if(this.$route.path === '/projects') this.selected = 2;
+            if(this.$route.path === '/stats') this.selected = 3;
+            if(this.$route.path === '/about') this.selected = 4;
+        }
         select(index: number):void {
             this.selected = index;
-            if(this.selected === 1) {
+            
+          
+            if(this.selected === 1 && this.$route.path !== '/today') {
                 this.$router.push("/today");
-                // this.$emit("goto", "/today")
             }
-            if(this.selected === 2) {
+            if(this.selected === 2 && this.$route.path !== '/projects') {
                 this.$router.push("/projects");
-                // this.$emit("goto", "/projects")
             }
-            if(this.selected === 3) {
+            if(this.selected === 3 && this.$route.path !== '/stats' ) {
                 this.$router.push("/stats");
-                // this.$emit("goto", "/stats")
             }
-            if(this.selected === 4) {
+            if(this.selected === 4 && this.$route.path !== '/about') {
                 this.$router.push("/about");
-                // this.$emit("goto", "/about")
             }
         }
     }
