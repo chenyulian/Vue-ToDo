@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { colorList } from '@/constants/colorList';
 export default {
     formatDate: (date:Date):string => {
         if(date === null) {
@@ -14,5 +15,12 @@ export default {
             return "后天";
         }
         return dayjs(date).format("MM-DD");
+    },
+
+    getLight: (base: string):string => {
+        return colorList.find(c => c.base === base)?.light || '#fff';
+    },
+    getDark: (base: string):string => {
+        return colorList.find(c => c.base === base)?.dark || '#333';
     }
 }

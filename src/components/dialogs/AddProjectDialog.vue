@@ -77,7 +77,11 @@
         submitNewProject():void {
           const project = new Project();
 
-          if(this.projectId === undefined ) project.id = createId("project").toString();
+          if(this.projectId === undefined ) { 
+            project.id = createId("project").toString()
+          } else {
+            project.id = this.projectId;
+          }
           
           project.color = this.projectColor;
           project.name = this.projectName;

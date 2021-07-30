@@ -2,7 +2,7 @@
     <div class="projects">
         <header>
             <h2>项目</h2>
-            <el-button type="primary" round @click="openAddProjectDialog">添加项目</el-button>
+            <el-button type="primary" round @click="openAddProjectDialog(undefined)">添加项目</el-button>
         </header>
                 
         <!-- <ul class="filters">
@@ -33,18 +33,27 @@
         </div> -->
         
         <div class="block">
-            <el-carousel trigger="click" :autoplay="false" indicator-position="none" arrow="always"  @change="change" height="150px">
-                <el-carousel-item :key="'-1'" style="background-color: #808CCF;">
-                    <h3 class="small">收集箱</h3>
-                    <div class="info"><span>2</span>个任务</div>
+            <el-carousel trigger="click" :autoplay="false" arrow="never"  @change="change" height="150px">
+                <el-carousel-item :key="'-1'" style="background: #9b9cbc;">
+                    <div class="progress">
+                        <el-progress type="circle" :percentage="0" :width="64"></el-progress>
+                    </div>
+                    <div class="info">
+                        <h3 class="small" :style="{color: getDark('#888aaf')}">收集箱</h3>
+                        <div class="task-number" :style="{color: getDark('#888aaf')}"><span>{{taskList.length || 0}}</span>个任务</div>
+                    </div>
+                    <div class="more">-</div>
                 </el-carousel-item>
 
-                <el-carousel-item v-for="item in projectList" :key="item.id"   :style="{backgroundColor:item.color}">
-                    <h3 class="small">{{ item.name }}</h3>
-                    <div class="info"><span>2</span>个任务</div>
+                <el-carousel-item v-for="item in projectList" :key="item.id" :style="{backgroundColor:getLight(item.color)}">
                     <div class="progress">
-                        
+                        <el-progress type="circle" :percentage="70" :width="64" :color="getDark(item.color)"></el-progress>
                     </div>
+                    <div class="info">
+                        <h3 class="small" :style="{color: getDark(item.color)}">{{ item.name }}</h3>
+                        <div class="task-number" :style="{color: getDark(item.color)}"><span>{{taskList.length || 0}}</span>个任务</div>
+                    </div>
+                    <div class="more"><i class="el-icon-more icon-more" :style="{color: getDark(item.color)}" @click="openAddProjectDialog(item.id)"></i></div>
                 </el-carousel-item>
             </el-carousel>
         </div>
@@ -55,7 +64,7 @@
             </li>
         </ul>
         <div class="add_task">
-            <task-editor class="editor"
+            <task-editor class="editor" :project_id="projectId"
              v-if="isAdding" @cancel="isAdding = false" @finish="isAdding = false"  />
             <add-task-button v-else @click="isAdding = true"/>
         </div>
@@ -71,6 +80,7 @@ import TaskDialog from "@/components/dialogs/TaskDialog.vue";
 import TaskItem from "@/components/TaskItem.vue";
 import AddTaskButton from "@/components/AddTaskButton.vue";
 import { openDialog } from "@/lib/openDialog";
+import Utils from "@/lib/Utils";
 
     @Component({
             components: {TaskDialog,TaskItem,AddTaskButton}
@@ -82,6 +92,9 @@ import { openDialog } from "@/lib/openDialog";
         projectId = "-1";
         taskNumber = {};
         isAdding = false;
+
+        getLight = Utils.getLight;
+        getDark = Utils.getDark;
 
         created():void {
             this.$store.commit("fetchProjectList");
@@ -100,12 +113,16 @@ import { openDialog } from "@/lib/openDialog";
 
         get taskList():Task[] {
             const taskList = this.$store.state.taskList as Task[];
-            return taskList.filter(i => i.project_id === this.projectId && i.status === 1);
+            return taskList.filter(i => i.project_id === this.projectId);
         }
 
         get projectList():Project[] {
             return this.$store.state.projectList as Project[];
         }
+
+        // get progress(projectId:string):number {
+            
+        // }
 
         change(index: number):void {
             console.log(index);
@@ -138,9 +155,8 @@ import { openDialog } from "@/lib/openDialog";
             });
         }
 
-        openAddProjectDialog():void {
-            openDialog();
-            // console.log('xxx')
+        openAddProjectDialog(id: string|undefined):void {
+            openDialog({id});
         }
     }
 </script>
@@ -245,14 +261,31 @@ import { openDialog } from "@/lib/openDialog";
 .el-carousel__item h3 {
     color: white;
     font-weight: 600;
+    font-size: 24px;
     letter-spacing: 0.1em;
     margin: 0;
 }
 
 .el-carousel__item {
-    // border: 1px solid red;
     border-radius: 16px;
     padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    // align-items: center;
+    align-items: start;
+    padding-bottom: 12px;
+
+    // & > div:not(&:last-child) {
+    //     transform: translateY(24px);
+    // }
+    // & > div {
+    //     // transform: translateY(-24px);
+    // }
+
+    & > .info {
+        flex-grow: 1;
+        padding-left: 16px;
+    }
 }
 .task-list {
     overflow: auto;
@@ -295,5 +328,22 @@ import { openDialog } from "@/lib/openDialog";
 
 .block {
     margin-top: 12px;
+}
+
+.el-carousel__item {
+    padding: 16px;
+}
+
+div.task-number {
+    font-size: 14px;
+}
+
+.icon-more {
+    transform: rotate(90deg);
+    font-size: 24px;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 </style>
