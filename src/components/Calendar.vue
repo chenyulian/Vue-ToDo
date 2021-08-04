@@ -8,8 +8,12 @@
                 <span class="calendar-item week-font">{{item}}</span>
             </li>
         </ul>
-        <section :style="{transform: `translateX(-${(transitionIndex) * 100}%)`, 
-                          transitionDuration:`${duration}s`}" >
+        <section ref="calendar"
+            :style="{transform: `translateX(-${(transitionIndex - move.x) * 100}%)`, 
+                          transitionDuration:`${duration}s`}"
+                          @touchstart="touchStart"
+                          @touchmove.stop.prevent="touchMove"
+                          @touchend="touchEnd" >
             <div class="banner-area">
                 <ul class="data-area" 
                 v-for="(carouselItem, carouselIndex) in carouselData" :key="carouselIndex">
@@ -53,6 +57,11 @@
         translateDuration = 0.3;
         transitionIndex = 1;
         needAnimation = true; //左右滑动时是否需要动画
+        isTouching = false;
+        move = {
+            x: 0,
+            y: 0
+        }
 
         getCurrentDay():void {
             let now = new Date();
@@ -205,6 +214,43 @@
             }, this.translateDuration * 1000);
            
         }
+
+        touchStartPositionX = 0;
+        // touch事件
+        touchStart(event:TouchEvent):void {
+            console.log('touch start');
+            this.isTouching = true;
+            this.touchStartPositionX = event.touches[0].clientX;
+            // console.log(event.touches[0].clientX, event.touches[0].clientY);
+        }
+
+        touchMove(event:TouchEvent):void {
+            console.log('touch move');
+            // console.log(event.touches[0].clientX)
+            const moveX = event.touches[0].clientX;
+            
+            this.move.x = (moveX - this.touchStartPositionX) / (this.$refs.calendar as Element).clientWidth;
+            // console.log(this.move.x);
+            // console.log(event)
+        }
+
+        touchEnd():void {
+            this.isTouching = false;
+            if (Math.abs(this.move.x) > 0.3) {
+                if (this.move.x < 0) {
+                    this.selectedData = this.getNextMonth(this.selectedData);
+                    this.needAnimation = true;
+                    this.transitionIndex += 1;
+                    this.dealMonthData();
+                } else {
+                    this.selectedData = this.getPrevMonth(this.selectedData);
+                    this.needAnimation = true;
+                    this.transitionIndex -= 1;
+                    this.dealMonthData();
+                }
+            }
+            this.move.x = 0;
+        }
     }
 </script>
 
@@ -269,7 +315,7 @@
     width: 100%;
     display: flex;
     flex-flow: row wrap;
-    border: 1px solid red;
+    // border: 1px solid red;
 }
 .data-font {
   color: #2b4450;
