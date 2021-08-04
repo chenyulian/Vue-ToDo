@@ -8,14 +8,23 @@
                 <span class="calendar-item week-font">{{item}}</span>
             </li>
         </ul>
-        <ul class="data-area">
-            <li class="data-item" v-for="(item, index) in dataArray" :key="index">
-                <span class="calendar-item data-font" :class="{'selected': item.isSelected, 'other-item': item.type !== 'normal'}"
-                    @click="checkoutDate(item)">{{item.day}}</span>
-            </li>
-        </ul>
-        <!-- <button @click="checkoutDate(getPrevMonth(selectedData))">prev</button> 
-        <button @click="getNextMonth(selectedData)">next</button> -->
+        <section :style="{transform: `translateX(-${(transitionIndex) * 100}%)`, 
+                          transitionDuration:`${duration}s`}" >
+            <div class="banner-area">
+                <ul class="data-area" 
+                v-for="(carouselItem, carouselIndex) in carouselData" :key="carouselIndex">
+                    <li class="data-item" v-for="(item, index) in carouselItem" :key="index">
+                        <span class="calendar-item data-font" :class="{'selected': item.isSelected, 'other-item': item.type !== 'normal'}"
+                            @click="checkoutDate(item)">{{item.day}}</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <button @click="checkoutDate(getPrevMonth(selectedData))">prev</button> 
+        <button @click="checkoutDate(getNextMonth(selectedData))">next</button>
+        {{transitionIndex}}
+        {{needAnimation}}
 
         <!-- {{selectedData.year}} - {{selectedData.month}} - {{selectedData.day}}
         {{getPrevMonth(selectedData)}} -->
@@ -25,6 +34,7 @@
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
+    import { Watch } from "vue-property-decorator";
 
     type CalendarItem = {
         year: number,
@@ -37,8 +47,12 @@
     @Component
     export default class Calender extends Vue{
         weekArray = ['日','一','二','三','四','五','六'];
-        dataArray:CalendarItem[] = []; 
+        dataArray:CalendarItem[] = [];
         selectedData!:CalendarItem;
+        carouselData:CalendarItem[][] = [];
+        translateDuration = 0.3;
+        transitionIndex = 1;
+        needAnimation = true; //左右滑动时是否需要动画
 
         getCurrentDay():void {
             let now = new Date();
@@ -51,14 +65,19 @@
             }
         }
 
+        get duration():number {
+            if(this. needAnimation) return this.translateDuration;
+            return 0;
+        }
+
         created():void {
          this.getCurrentDay();
         //  console.log(this.selectedData)  
-         this.dataArray = this.getMonthData(this.selectedData); 
+         this.dataArray = this.getMonthData(this.selectedData);
         }
 
         getMonthData(data: CalendarItem): CalendarItem[] {
-            console.log('getMonthData')
+            // console.log('getMonthData')
             const {month, year, day} = data;
             // console.log(month, year, day);
             let dataArray:CalendarItem[] = [];
@@ -72,8 +91,6 @@
             const monthEndWeekday = new Date(year, month, 1).getDay() || 7;
             const prevInfo = this.getPrevMonth(data);
             const nextInfo = this.getNextMonth(data);
-             console.log(`prevInfo, nextInfo`);
-            console.log(prevInfo, nextInfo);
 
             // 数据填充
             for(let i = 0; i < monthStartWeekday; i ++) {
@@ -123,13 +140,19 @@
                 // console.log(selectData);
                 // this.selectedData = selectData;
                 this.selectedData = this.getPrevMonth(this.selectedData, selectData.day);
+                this.needAnimation = true;
+                this.transitionIndex -= 1;
                 this.dealMonthData();
+                
             }
 
             if(selectData.type === 'next') {
                 // console.log(selectData);
                 this.selectedData = this.getNextMonth(this.selectedData, selectData.day);
+                this.needAnimation = true;
+                this.transitionIndex += 1;
                 this.dealMonthData();
+                
             }
             this.selectedData.day = selectData.day; // 对选中日期赋值
             const oldSelectIndex = this.dataArray.findIndex(item => item.isSelected && item.type === 'normal')
@@ -151,7 +174,7 @@
 
             // this.selectedData = {year, month, day:appointDay, type:'normal', isSelected:true};
             // this.getMonthData(this.selectedData);
-            return {year, month, day:appointDay};
+            return {year, month, day:appointDay,type:'pre'};
         }
 
         getNextMonth(item: CalendarItem, appointDay=1):CalendarItem {
@@ -163,15 +186,24 @@
             } else {
                 month += 1
             }
-            // console.log('get next:')
-            // console.log(year, month)
-            // this.selectedData = {year, month, day:appointDay, type:'normal', isSelected:true};
-            // this.getMonthData(this.selectedData);
-            return {year, month, day:appointDay};
+            return {year, month, day:appointDay,type:"next"};
         }
 
         dealMonthData():void { 
             this.dataArray = this.getMonthData(this.selectedData);
+        }
+
+        @Watch("dataArray",{deep: true})
+        changeCarouselData():void {
+            const prev = this.getMonthData(this.getPrevMonth(this.selectedData));
+            const next = this.getMonthData(this.getNextMonth(this.selectedData));
+            setTimeout(()=>{
+                // 重置Index
+                this.needAnimation = false;
+                this.transitionIndex = 1;
+                this.carouselData = [prev, this.dataArray, next];
+            }, this.translateDuration * 1000);
+           
         }
     }
 </script>
@@ -237,10 +269,16 @@
     width: 100%;
     display: flex;
     flex-flow: row wrap;
+    border: 1px solid red;
 }
 .data-font {
   color: #2b4450;
   font-size: 18px;
   font-weight: 400;
+}
+
+.banner-area {
+    width: 300%;
+    display: flex;
 }
 </style>
