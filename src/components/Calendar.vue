@@ -14,11 +14,11 @@
                           @touchstart="touchStart"
                           @touchmove.stop.prevent="touchMove"
                           @touchend="touchEnd" >
-            <div class="banner-area">
+            <div class="banner-area" :style="{height: (dataArray.length / 7) * itemHeight}">
                 <ul class="data-area" 
                 v-for="(carouselItem, carouselIndex) in carouselData" :key="carouselIndex">
                     <li class="data-item" v-for="(item, index) in carouselItem" :key="index">
-                        <span class="calendar-item data-font" :class="{'selected': item.isSelected, 'other-item': item.type !== 'normal'}"
+                        <span class="calendar-item data-font" :class="{'selected': item.isSelected, 'other-item': item.type !== 'normal' && !isWeekView}"
                             @click="checkoutDate(item)">{{item.day}}</span>
                     </li>
                 </ul>
@@ -29,9 +29,13 @@
         <button @click="checkoutDate(getNextMonth(selectedData))">next</button>
         {{transitionIndex}}
         {{needAnimation}}
-
+        <button @click="isWeekView = !isWeekView">toggleWeekView</button>
         <!-- {{selectedData.year}} - {{selectedData.month}} - {{selectedData.day}}
         {{getPrevMonth(selectedData)}} -->
+        {{currentWeekOfYear}}
+        {{isWeekView}}
+        {{selectedData}}
+        datalength:{{dataArray.length}}
     </div>
 </template>
 
@@ -39,6 +43,11 @@
     import Vue from "vue";
     import Component from "vue-class-component";
     import { Watch } from "vue-property-decorator";
+    import dayjs, { Dayjs } from "dayjs";
+
+    var weekOfYear = require('dayjs/plugin/weekOfYear');
+    // dayjs.extend(weekOfYear);
+    dayjs.extend(weekOfYear);
 
     type CalendarItem = {
         year: number,
@@ -58,10 +67,16 @@
         transitionIndex = 1;
         needAnimation = true; //左右滑动时是否需要动画
         isTouching = false;
+        currentWeekOfYear = 0;
         move = {
             x: 0,
             y: 0
         }
+        isWeekView = false;
+        prevWeekData:CalendarItem[] = [];
+        nextWeekData:CalendarItem[] = [];
+        itemHeight = 40;
+        offsetY = 0; // y轴偏移量
 
         getCurrentDay():void {
             let now = new Date();
@@ -81,14 +96,14 @@
 
         created():void {
          this.getCurrentDay();
-        //  console.log(this.selectedData)  
-         this.dataArray = this.getMonthData(this.selectedData);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.currentWeekOfYear = dayjs(new Date()).week();
+        this.dataArray = this.getMonthData(this.selectedData);
         }
 
         getMonthData(data: CalendarItem): CalendarItem[] {
-            // console.log('getMonthData')
             const {month, year, day} = data;
-            // console.log(month, year, day);
             let dataArray:CalendarItem[] = [];
             // 每月的天数
             let daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
@@ -141,34 +156,51 @@
         }
 
         checkoutDate(selectData:CalendarItem):void {
-            // console.log('checkoutDate')
-            // console.log(selectData.month, selectData.day)
             // if (selectData.type !== 'normal') return; // 非有效日期不可点选
 
-            if(selectData.type === 'pre') {
-                // console.log(selectData);
-                // this.selectedData = selectData;
-                this.selectedData = this.getPrevMonth(this.selectedData, selectData.day);
-                this.needAnimation = true;
-                this.transitionIndex -= 1;
-                this.dealMonthData();
-                
-            }
+            if(this.isWeekView) {
+                console.log('is week view');
+                this.selectedData = selectData;
+                 const oldSelectIndex = this.dataArray.findIndex(item => item.isSelected);
+                const newSelectIndex = this.dataArray.findIndex(item => item.day === selectData.day);
 
-            if(selectData.type === 'next') {
-                // console.log(selectData);
-                this.selectedData = this.getNextMonth(this.selectedData, selectData.day);
-                this.needAnimation = true;
-                this.transitionIndex += 1;
-                this.dealMonthData();
-                
-            }
-            this.selectedData.day = selectData.day; // 对选中日期赋值
-            const oldSelectIndex = this.dataArray.findIndex(item => item.isSelected && item.type === 'normal')
-            const newSelectIndex = this.dataArray.findIndex(item => item.day === selectData.day && item.type === 'normal')
+                if (this.dataArray[oldSelectIndex]) this.$set(this.dataArray[oldSelectIndex], 'isSelected', false)
+                if (this.dataArray[newSelectIndex]) this.$set(this.dataArray[newSelectIndex], 'isSelected', true)
 
-            if (this.dataArray[oldSelectIndex]) this.$set(this.dataArray[oldSelectIndex], 'isSelected', false)
-            if (this.dataArray[newSelectIndex]) this.$set(this.dataArray[newSelectIndex], 'isSelected', true)
+            } else {
+                if(selectData.type === 'pre') {
+                    // console.log(selectData);
+                    // this.selectedData = selectData;
+                    this.selectedData = this.getPrevMonth(this.selectedData, selectData.day);
+                    this.needAnimation = true;
+                    this.transitionIndex -= 1;
+                    this.dealMonthData();
+                }
+
+                if(selectData.type === 'next') {
+                    // console.log(selectData);
+                    this.selectedData = this.getNextMonth(this.selectedData, selectData.day);
+                    this.needAnimation = true;
+                    this.transitionIndex += 1;
+                    this.dealMonthData();
+                    
+                }
+
+                this.selectedData.day = selectData.day; // 对选中日期赋值
+                const oldSelectIndex = this.dataArray.findIndex(item => item.isSelected && item.type === 'normal')
+                const newSelectIndex = this.dataArray.findIndex(item => item.day === selectData.day && item.type === 'normal')
+
+                if (this.dataArray[oldSelectIndex]) this.$set(this.dataArray[oldSelectIndex], 'isSelected', false)
+                if (this.dataArray[newSelectIndex]) this.$set(this.dataArray[newSelectIndex], 'isSelected', true)
+
+                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                this.currentWeekOfYear = dayjs(new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day)).week();
+            }
+            
+            
+
+           
         }
 
         getPrevMonth(item: CalendarItem, appointDay=1):CalendarItem {
@@ -202,10 +234,26 @@
             this.dataArray = this.getMonthData(this.selectedData);
         }
 
+        // 获取本周数据
+        dealWeekData():void {
+            const currentDay = new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day);
+            // 本周的开始（周日）
+            const thisWeekStart = dayjs(currentDay).add(-currentDay.getDay(), 'day');
+            this.dataArray = this.getWeekDataArray(thisWeekStart);
+        }
+
         @Watch("dataArray",{deep: true})
         changeCarouselData():void {
-            const prev = this.getMonthData(this.getPrevMonth(this.selectedData));
-            const next = this.getMonthData(this.getNextMonth(this.selectedData));
+            let prev:CalendarItem[] = [];
+            let next:CalendarItem[] = [];
+            if(!this.isWeekView) {
+                prev = this.getMonthData(this.getPrevMonth(this.selectedData));
+                next = this.getMonthData(this.getNextMonth(this.selectedData));
+            } else {
+                prev = this.prevWeekData;
+                next = this.nextWeekData;
+            }
+           
             setTimeout(()=>{
                 // 重置Index
                 this.needAnimation = false;
@@ -213,6 +261,45 @@
                 this.carouselData = [prev, this.dataArray, next];
             }, this.translateDuration * 1000);
            
+        }
+
+        @Watch("isWeekView")
+        changeView():void {
+            console.log('week view:');
+            
+            console.log(this.isWeekView)
+            if(this.isWeekView) {
+                const currentDay = new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day);
+                const thisWeekStart = dayjs(currentDay).add(-currentDay.getDay(), 'day');
+                this.dealWeekData();
+                
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const x = dayjs(thisWeekStart).week(this.currentWeekOfYear - 1);
+                this.prevWeekData = this.getWeekDataArray(x);
+                
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                const y = dayjs(thisWeekStart).week(this.currentWeekOfYear + 1);
+                this.nextWeekData = this.getWeekDataArray(y);
+            } else {
+                this.dealMonthData();
+            }
+              
+        }
+
+        getWeekDataArray(day: Dayjs) : CalendarItem[] {
+            let result:CalendarItem[] = [];
+             for(let i = 0; i < 7; i ++) {
+                let temp = dayjs(day).add(i, 'day');                
+                result[i] = {
+                    year: temp.get('year'),
+                    month: temp.get('month') + 1,
+                    day: temp.get('date'),
+                    isSelected: temp.get('date') === this.selectedData.day
+                }
+            }
+            return result;
         }
 
         touchStartPositionX = 0;
@@ -236,17 +323,68 @@
 
         touchEnd():void {
             this.isTouching = false;
+            const currentDay = new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day);
+            const thisWeekStart = dayjs(currentDay).add(-currentDay.getDay(), 'day');
+            console.log('week start');
+            
+            console.log(thisWeekStart);
+            // console.log();
+            
+            
+            
+            // console.log(pre, next);
+            
+            // console.log(currentDay);
+            // console.log(thisWeekStart);
+            
+            
             if (Math.abs(this.move.x) > 0.3) {
                 if (this.move.x < 0) {
-                    this.selectedData = this.getNextMonth(this.selectedData);
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-ignore
+                    let next = dayjs(thisWeekStart).week(this.currentWeekOfYear + 1);
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-ignore
+                    this.currentWeekOfYear += 1;
+                    
+                    console.log('current week')
+                    console.log(this.currentWeekOfYear);
+                    
+                    console.log('next');
+                    console.log(next);
+                    
+                    
+                    
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-ignore
+                    this.selectedData = this.isWeekView? {year: next.get('year'), month: next.get('month') + 1, day: next.get('date'), isSelected: true} : this.getNextMonth(this.selectedData);
+                    // this.selectedData = this.getNextMonth(this.selectedData);
                     this.needAnimation = true;
                     this.transitionIndex += 1;
-                    this.dealMonthData();
+                    if(this.isWeekView) {
+                        this.dealWeekData();
+                    } else {
+                        this.dealMonthData();
+                    }
+                    
                 } else {
-                    this.selectedData = this.getPrevMonth(this.selectedData);
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-ignore
+                    let pre = dayjs(thisWeekStart).week(this.currentWeekOfYear - 1);
+                    this.currentWeekOfYear -= 1;
+            
+                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-ignore
+                    // this.selectedData = this.isWeekView? dayjs(thisWeekStart).week(this.currentWeekOfYear - 1) : this.getPrevMonth(this.selectedData);
+                    // this.selectedData = this.getPrevMonth(this.selectedData);
+                    this.selectedData = this.isWeekView? {year: pre.get('year'), month: pre.get('month') + 1, day: pre.get('date'), isSelected: true} : this.getPrevMonth(this.selectedData);
                     this.needAnimation = true;
                     this.transitionIndex -= 1;
-                    this.dealMonthData();
+                    if(this.isWeekView) {
+                        this.dealWeekData();
+                    } else {
+                        this.dealMonthData();
+                    }
                 }
             }
             this.move.x = 0;
