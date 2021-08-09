@@ -3,19 +3,29 @@
         <section class="header">
             {{ selectedData.year }}年{{ selectedData.month }}月{{ selectedData.day }}日
         </section>
-        <ul class="week-area">
+        <ul class="week-area" style="z-index:10">
             <li class="week-item" v-for="(item, index) in weekArray" :key="index">
                 <span class="calendar-item week-font">{{item}}</span>
             </li>
         </ul>
         <section ref="calendar"
+           
             :style="{transform: `translateX(-${(transitionIndex - move.x) * 100}%)`, 
                           transitionDuration:`${duration}s`}"
                           @touchstart="touchStart"
                           @touchmove.stop.prevent="touchMove"
                           @touchend="touchEnd" >
-            <div class="banner-area" :style="{height: (dataArray.length / 7) * itemHeight}">
+            <div class="banner-area" 
+                style="overflow-y:hidden"
+                :style="{height: `${(dataArray.length / 7) * itemHeight}px`, transitionDuration:`${heightDuration}s`}"
+                >
                 <ul class="data-area" 
+                  :style="{ 
+                          transform: `translateY(${offsetY}px)`,
+                          
+                          transitionDuration:`${heightDuration}s`,
+                          transitionProperty: `all`,}
+                          "
                 v-for="(carouselItem, carouselIndex) in carouselData" :key="carouselIndex">
                     <li class="data-item" v-for="(item, index) in carouselItem" :key="index">
                         <span class="calendar-item data-font" :class="{'selected': item.isSelected, 'other-item': item.type !== 'normal' && !isWeekView}"
@@ -29,7 +39,7 @@
         <button @click="checkoutDate(getNextMonth(selectedData))">next</button>
         {{transitionIndex}}
         {{needAnimation}}
-        <button @click="isWeekView = !isWeekView">toggleWeekView</button>
+        <!-- <button @click="isWeekView = !isWeekView">toggleWeekView</button> -->
         <!-- {{selectedData.year}} - {{selectedData.month}} - {{selectedData.day}}
         {{getPrevMonth(selectedData)}} -->
         {{currentWeekOfYear}}
@@ -66,6 +76,7 @@
         translateDuration = 0.3;
         transitionIndex = 1;
         needAnimation = true; //左右滑动时是否需要动画
+        needHeightAnimation = false; 
         isTouching = false;
         currentWeekOfYear = 0;
         move = {
@@ -90,7 +101,12 @@
         }
 
         get duration():number {
-            if(this. needAnimation) return this.translateDuration;
+            if(this.needAnimation) return this.translateDuration;
+            return 0;
+        }
+
+        get heightDuration():number {
+            if(this.needHeightAnimation) return this.translateDuration;
             return 0;
         }
 
@@ -265,9 +281,6 @@
 
         @Watch("isWeekView")
         changeView():void {
-            console.log('week view:');
-            
-            console.log(this.isWeekView)
             if(this.isWeekView) {
                 const currentDay = new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day);
                 const thisWeekStart = dayjs(currentDay).add(-currentDay.getDay(), 'day');
@@ -303,42 +316,29 @@
         }
 
         touchStartPositionX = 0;
+        touchStartPositionY = 0;
         // touch事件
         touchStart(event:TouchEvent):void {
-            console.log('touch start');
             this.isTouching = true;
             this.touchStartPositionX = event.touches[0].clientX;
-            // console.log(event.touches[0].clientX, event.touches[0].clientY);
+            this.touchStartPositionY = event.touches[0].clientY;
         }
 
         touchMove(event:TouchEvent):void {
-            console.log('touch move');
-            // console.log(event.touches[0].clientX)
             const moveX = event.touches[0].clientX;
-            
+            const moveY = event.touches[0].clientY;
             this.move.x = (moveX - this.touchStartPositionX) / (this.$refs.calendar as Element).clientWidth;
-            // console.log(this.move.x);
-            // console.log(event)
+            this.move.y = (moveY - this.touchStartPositionY) / (this.$refs.calendar as Element).clientHeight;
+           
         }
 
         touchEnd():void {
             this.isTouching = false;
             const currentDay = new Date(this.selectedData.year, this.selectedData.month - 1, this.selectedData.day);
             const thisWeekStart = dayjs(currentDay).add(-currentDay.getDay(), 'day');
-            console.log('week start');
-            
-            console.log(thisWeekStart);
-            // console.log();
-            
-            
-            
-            // console.log(pre, next);
-            
-            // console.log(currentDay);
-            // console.log(thisWeekStart);
-            
-            
-            if (Math.abs(this.move.x) > 0.3) {
+       
+            if(Math.abs(this.move.x) >= Math.abs(this.move.y)) {
+                 if (Math.abs(this.move.x) > 0.3) {
                 if (this.move.x < 0) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
@@ -352,8 +352,6 @@
                     
                     console.log('next');
                     console.log(next);
-                    
-                    
                     
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     //@ts-ignore
@@ -372,11 +370,6 @@
                     //@ts-ignore
                     let pre = dayjs(thisWeekStart).week(this.currentWeekOfYear - 1);
                     this.currentWeekOfYear -= 1;
-            
-                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    //@ts-ignore
-                    // this.selectedData = this.isWeekView? dayjs(thisWeekStart).week(this.currentWeekOfYear - 1) : this.getPrevMonth(this.selectedData);
-                    // this.selectedData = this.getPrevMonth(this.selectedData);
                     this.selectedData = this.isWeekView? {year: pre.get('year'), month: pre.get('month') + 1, day: pre.get('date'), isSelected: true} : this.getPrevMonth(this.selectedData);
                     this.needAnimation = true;
                     this.transitionIndex -= 1;
@@ -387,7 +380,34 @@
                     }
                 }
             }
+            } else {
+                if(Math.abs(this.move.y) > 0.3) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                   const monthStartWeek = dayjs(new Date(this.selectedData.year, this.selectedData.month - 1, 1)).week();
+                   console.log(monthStartWeek);
+                   const offsetAbs = (this.currentWeekOfYear - monthStartWeek) * this.itemHeight;
+                   
+                    if(this.move.y > 0) {
+                            this.needHeightAnimation = true;
+                            this.isWeekView = false;
+                    } else {
+                            this.needHeightAnimation = true;
+                            this.isWeekView = true;
+                            this.offsetY = -offsetAbs;
+                            
+                            setTimeout(() => {
+                                this.needHeightAnimation = false;
+                                this.offsetY = 0;
+                            }, 300);
+            
+                    }
+                }
+            }
+            
+           
             this.move.x = 0;
+            this.move.y = 0;
         }
     }
 </script>
