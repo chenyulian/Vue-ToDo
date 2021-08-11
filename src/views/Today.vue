@@ -64,6 +64,20 @@
 <style lang="scss" scoped>
 @import '~@/assets/style/common.scss';
 
+.today {
+  padding-top: 100px;
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 746px;
+  margin-left: auto;
+  margin-right: auto;
+  // margin-top: 24px;
+ 
+  overflow: hidden;
+  @media (max-width: 500px) {
+    padding-top: 48px;
+  }
+}
 // .task_list > ul > li hr {
 //     border:0;
 //     background-color: $color-border-3;;

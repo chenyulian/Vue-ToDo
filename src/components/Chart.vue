@@ -17,13 +17,19 @@
 
         mounted():void {
             const width = document.documentElement.clientWidth;
+            console.log(width);
+            
             const wrapper = this.$refs.wrapper as HTMLDivElement;
-            wrapper.style.width = `${width - 40}px`
-            wrapper.style.height = `${(width - 40) * 1.2}px`
+            // wrapper.style.width = `300px`;
+            // wrapper.style.height = `360px`
             
             let myChart = echarts.init(wrapper);
             if(this.option !== undefined) {
                 myChart.setOption(this.option);
+            }
+
+            window.onresize = () => {
+                myChart.resize();
             }
         }
     }
@@ -31,7 +37,11 @@
 
 <style lang="scss" scoped>
 .wrapper {
-    display: flex;
-    justify-content: center;
+    // width: 50%;
+    // margin-left: 40px;
+    width: 100%;
+    height: 60%;
+    border: 1px solid green;
+    border-radius: 10px;
 }
 </style>

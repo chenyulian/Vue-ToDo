@@ -64,6 +64,7 @@ $spacing: calc((100vw - 4 * #{$seletedWidth}) / 5);
   
   position: relative;
   padding: 120px 8px;
+  min-width: 300px;
 //   
   
 //   

@@ -167,6 +167,18 @@ import Utils from "@/lib/Utils";
 .projects {
     display: flex;
     flex-direction: column;
+    padding-top: 100px;
+    padding-left: 24px;
+    padding-right: 24px;
+    max-width: 746px;
+    margin-left: auto;
+    margin-right: auto;
+    // margin-top: 24px;
+    
+    overflow: hidden;
+    @media (max-width: 500px) {
+        padding-top: 48px;
+    }
 
     & > header {
         display: flex;

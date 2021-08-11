@@ -10,7 +10,7 @@
       <router-view class="content" />
       <BottomNav />
       <!-- dialogs -->
-      <add-project-dialog :visible.sync="addProjectDialogVisible" />
+      <!-- <add-project-dialog :visible.sync="addProjectDialogVisible" /> -->
     </main>
   </div>
 </template>
@@ -25,7 +25,7 @@ import BottomNav from "@/components/BottomNav.vue";
 })
 export default class App extends Vue {
   isShowSidebar = true;
-  addProjectDialogVisible = false;
+  addProjectDialogVisible = false; 
 }
 </script>
 
@@ -56,18 +56,7 @@ main {
 
 .content {
   width: 100%;
-  padding-top: 100px;
-  padding-left: 24px;
-  padding-right: 24px;
-  max-width: 746px;
-  margin-left: auto;
-  margin-right: auto;
-  // margin-top: 24px;
   flex-grow: 1;
-  overflow: hidden;
-  @media (max-width: 500px) {
-    padding-top: 48px;
-  }
 }
 .slide-fade-enter-active {
   transition: all .3s ease
