@@ -3,7 +3,7 @@
         <task-editor :project_id="task.project_id" :block_id="task.block_id" :task_id="task.id" v-if="isEditing"
             @cancel = "isEditing = false" @finish="isEditing = false" />
         <div class="task-container" v-else>
-            <div class="task">
+            <div class="task" :class="{'finished': task.status === 2}">
                 <div class="check-box" @click="finishTask(task.id)">
                     <Icon name="tick" class="tick" />
                 </div>
@@ -130,6 +130,9 @@
         }
 
         finishTask(id:string):void {
+            if(this.task.status === 2) {
+                return;
+            }
             this.$store.commit("finishTask",id);
             this.$message({
                  message: '任务已完成',
@@ -217,6 +220,29 @@
                         color: $color-theme;
                     }
                 }
+            }
+
+            &.finished {
+                & .check-box {
+                    background-color: #808CCF;
+                    & > .tick {
+                        display: block;
+                    }
+                    &:hover {
+                        cursor: default;
+                    }
+                }
+
+                & .task-content {
+                    color: $color-font-occupation;
+                    font-style: italic;
+                    text-decoration: line-through;
+                }
+
+                & .task-operation {
+                    display: none;
+                }
+            
             }
         }
 
