@@ -35,32 +35,43 @@
         <div class="block">
             <el-carousel trigger="click" :autoplay="false" arrow="never"  @change="change" height="150px">
                 <el-carousel-item :key="'-1'" style="background: #9b9cbc;">
-                    <div class="progress">
+                    <!-- <div class="progress">
                         <el-progress type="circle" :percentage="0" :width="64"></el-progress>
-                    </div>
+                    </div> -->
                     <div class="info">
                         <h3 class="small" :style="{color: getDark('#888aaf')}">收集箱</h3>
                         <div class="task-number" :style="{color: getDark('#888aaf')}"><span>{{taskList.length || 0}}</span>个任务</div>
+                        <el-progress :percentage="finishRate" :color="getDark('#888aaf')"></el-progress>
                     </div>
-                    <div class="more">-</div>
+                    <!-- <div class="more">-</div> -->
                 </el-carousel-item>
 
                 <el-carousel-item v-for="item in projectList" :key="item.id" :style="{backgroundColor:getLight(item.color)}">
-                    <div class="progress">
+                    <!-- <div class="progress">
                         <el-progress type="circle" :percentage="70" :width="64" :color="getDark(item.color)"></el-progress>
-                    </div>
+                    </div> -->
                     <div class="info">
                         <h3 class="small" :style="{color: getDark(item.color)}">{{ item.name }}</h3>
                         <div class="task-number" :style="{color: getDark(item.color)}"><span>{{taskList.length || 0}}</span>个任务</div>
+                        <el-progress :percentage="finishRate" :color="getDark(item.color)"></el-progress>
                     </div>
                     <div class="more"><i class="el-icon-more icon-more" :style="{color: getDark(item.color)}" @click="openAddProjectDialog(item.id)"></i></div>
                 </el-carousel-item>
             </el-carousel>
         </div>
-        <h2 style="margin-top: 12px;">任务</h2>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+            <h2>任务</h2>
+            <el-button size="small" type="text" @click="showFinished = !showFinished">
+                <span v-if="showFinished">隐藏</span>
+                <span v-else>显示</span>已完成
+            </el-button>
+        </div>
+        
         <ul class="task-list">
-            <li v-for="task in taskList" :key="task.id">
-                <task-item :taskId="task.id" :showProjectName="false"/>
+            <li v-for="task in taskList" :key="task.id" >
+                <!-- <transition name="fade"> -->
+                    <task-item :taskId="task.id" :showProjectName="false" v-if="showFinished?true:(task.status !== 2)"/>
+                <!-- </transition> -->
             </li>
         </ul>
         <div class="add_task">
@@ -92,6 +103,7 @@ import Utils from "@/lib/Utils";
         projectId = "-1";
         taskNumber = {};
         isAdding = false;
+        showFinished = false;
 
         getLight = Utils.getLight;
         getDark = Utils.getDark;
@@ -109,6 +121,13 @@ import Utils from "@/lib/Utils";
             //                     "-1", 
             //                     {value: taskList.filter(i => i.project_id === "-1" && i.status === 1).length} || 0);
 
+        }
+
+        get finishRate():number {
+            let finished = this.taskList.filter(i => i.status === 2).length;
+            let all = this.taskList.filter(i => i.status !== 0).length
+
+            return all === 0 ? 0 : Number((finished / all * 100).toFixed());
         }
 
         get taskList():Task[] {
@@ -273,7 +292,7 @@ import Utils from "@/lib/Utils";
 .el-carousel__item h3 {
     color: white;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 32px;
     letter-spacing: 0.1em;
     margin: 0;
 }
@@ -303,7 +322,10 @@ import Utils from "@/lib/Utils";
     overflow: auto;
     margin-bottom: 12px;
     & > li {
-        padding: 4px 0;
+        &:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        
     }
 }
 
@@ -348,6 +370,7 @@ import Utils from "@/lib/Utils";
 
 div.task-number {
     font-size: 14px;
+    margin-bottom: 16px;
 }
 
 .icon-more {
@@ -357,5 +380,12 @@ div.task-number {
     &:hover {
         cursor: pointer;
     }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

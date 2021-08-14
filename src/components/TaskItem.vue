@@ -1,5 +1,5 @@
 <template>
-    <div class="task_item" :class="{isEditing: isEditing}" @dblclick="isEditing = true">
+    <div class="task_item" :class="{isEditing: isEditing}" @dblclick="isEditing = task.status===2?false:true">
         <task-editor :project_id="task.project_id" :block_id="task.block_id" :task_id="task.id" v-if="isEditing"
             @cancel = "isEditing = false" @finish="isEditing = false" />
         <div class="task-container" v-else>
@@ -10,23 +10,6 @@
                 <div class="task-content">{{task.content}}</div>
                 <div class="task-operation">
                     <i class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
-                    <!-- <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="click"
-                        ref="operation-popover">
-                        <ul class="operation_list">
-                                <li @click="isEditing = true">
-                                <i class="el-icon-edit-outline"></i>
-                                <div>修改任务</div> 
-                            </li>
-                            <li @click="deleteTask(task.id)">
-                                <i class="el-icon-delete"></i>
-                                <div>删除任务</div> 
-                            </li>
-                            
-                        </ul>
-                    </el-popover> -->
                 </div>
             </div>
              
@@ -35,7 +18,7 @@
                     <i class="el-icon-date"></i>
                     {{taskDueDate}}
                 </div>
-                <div class="task-project" v-if="showProjectName">
+                <div class="task-project" v-if="showProjectName" style="display:flex; align-items: center">
                     <div class="colored-sign" :style="color && `background-color:${color};`"></div>
                     <span>{{taskProjectName}}</span>
                 </div>
@@ -76,6 +59,7 @@
 
         beforeCreate():void {
             this.$store.commit("fetchTaskList");
+            this.$store.commit("fetchProjectList");
         }
 
         get taskProjectName():string {
@@ -224,7 +208,8 @@
 
             &.finished {
                 & .check-box {
-                    background-color: #808CCF;
+                    background-color: $color-font-occupation;
+                    border-color: $color-font-occupation;
                     & > .tick {
                         display: block;
                     }
@@ -301,5 +286,12 @@
             cursor: pointer;
         }
     }
+}
+
+.colored-sign {
+    width: 8px;
+    height: 8px;
+    border-radius: 6px;
+    margin-right: 4px;
 }
 </style>

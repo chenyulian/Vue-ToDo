@@ -1,10 +1,17 @@
 <template>
     <div class="today">
-        <h2 class="title">{{todayString}}</h2>
+        <div style="display:flex; justify-content: space-between">
+             <h2 class="title">{{todayString}}</h2>
+            <el-button size="small" type="text" @click="showFinished = !showFinished">
+                <span v-if="showFinished">隐藏</span>
+                <span v-else>显示</span>已完成
+            </el-button>
+        </div>
+       
         <div class="task_list">
             <ul>
                 <li v-for="task in task_list" :key="task.id">
-                    <TaskItem :taskId = "task.id" v-if="!isEditing" @edit="editTask(task.id)" />
+                    <TaskItem :taskId = "task.id" @edit="editTask(task.id)" v-if="showFinished?true:(task.status !== 2)" />
                     <!-- <hr /> -->
                 </li>
             </ul>
@@ -35,11 +42,13 @@
         editingTaskId = "-1";
         isAdding = false;
 
+        showFinished = false;
+
         get task_list():Task[] {
             const task_list = (this.$store.state.taskList || []) as Task[];
             return task_list.filter((task)=>{
                 if(task.due_date !== null) {
-                    if(dayjs(task.due_date).isSame(dayjs(new Date()),"day") && task.status === 1) {
+                    if(dayjs(task.due_date).isSame(dayjs(new Date()),"day")) {
                         return true;
                     } else {
                         return false;
@@ -87,7 +96,9 @@
 .task_list > ul  {
     margin-bottom: 12px;
     &>li {
-        padding: 4px 0;
+        &:not(:last-child) {
+            margin-bottom: 4px;
+        }
     }
 }
 
