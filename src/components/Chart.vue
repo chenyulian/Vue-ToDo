@@ -16,8 +16,8 @@
         option?: EChartsOption;
 
         mounted():void {
-            const width = document.documentElement.clientWidth;
-            console.log(width);
+            // const width = document.documentElement.clientWidth;
+            // console.log(width);
             
             const wrapper = this.$refs.wrapper as HTMLDivElement;
             // wrapper.style.width = `300px`;
@@ -31,17 +31,23 @@
             window.onresize = () => {
                 myChart.resize();
             }
+
+            // window.onload = () => {
+
+            // }
         }
     }
 </script>
 
 <style lang="scss" scoped>
 .wrapper {
-    // width: 50%;
-    // margin-left: 40px;
     width: 100%;
     height: 60%;
-    border: 1px solid green;
+    // border: 1px solid green;
     border-radius: 10px;
+
+    @media (max-width: 500px) {
+        height: 55%;
+    }
 }
 </style>

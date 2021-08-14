@@ -13,7 +13,7 @@
     "core-js": "^3.6.5",
     "dayjs": "^1.10.5",
     "echarts": "^5.1.2",
-    "element-ui": "^2.15.2",
+    "element-ui": "^2.15.5",
     "fonts.css": "^2.0.0",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",

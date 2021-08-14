@@ -1,7 +1,39 @@
 <template>
     <div class="stats">
-        <Chart :option="option" />
-        <div class="infos"></div>
+        <div class="data" v-if="xxx">
+            <Chart :option="option" />
+            <div class="infos">
+                <ul class="yesterday-info">
+                    <li>
+                        <div><span>{{taskNumYesterday}}</span>项</div>
+                        <div class="desc">
+                            昨日完成待办
+                        </div> 
+                    </li>
+                    <li>
+                       <div><span>{{taskRateYesterday}}</span>%</div>
+                        <div class="desc">
+                            昨日完成率
+                        </div> 
+                    </li>
+                </ul>
+                <div class="week-info">
+                    <el-progress type="circle" :percentage="taskRateThisWeek" :width="90" color="#808CCF"></el-progress>
+                    <div style="margin-left: 16px;">
+                        <div style="font-size: 20px;">
+                            <span>{{finishedTaskNumThisWeek}}</span>/<span>{{taskThisWeek.length}}</span>
+                            <span class="desc" style="margin-left: 4px;">项待办</span>
+                        </div>
+                        <span class="desc">本周完成情况</span>
+                    </div> 
+
+                </div>
+            </div>
+        </div>
+        <div class="empty" v-else>
+            <Icon name="empty" class="icon-empty" />
+            <div>暂时没有任务</div>
+        </div>
     </div>
 </template>
 
@@ -9,15 +41,141 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Chart from "@/components/Chart.vue"
+import Task from "@/lib/Task";
+import dayjs from "dayjs";
+import Project from "@/lib/Project";
+
+    type Series = {
+        value: number,
+        name: string,
+        itemStyle: {color: string}
+    }
     @Component(
         {components: {Chart}
     })
     export default class Stats extends Vue{
+        xxx = true;
+
+        // taskList:Task[] = [];
+
+        beforeCreate():void {
+            this.$store.commit("fetchTaskList");
+            this.$store.commit("fetchProjectList")
+            // this.taskList = this.$store.state.taskList as Task[];
+        }
+
+        // 昨日完成待办
+        get taskNumYesterday():number {
+            const task_list = this.$store.state.taskList as Task[];
+            console.log(task_list);
+            
+            if(task_list && task_list.length > 0) {
+                return task_list.filter((i)=>{                    
+                    return i.finishTime && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day');
+                }).length;
+            } else {
+                return 0;
+            }
+        }
+
+        // 昨日完成率
+        get taskRateYesterday():string {
+            const task_list = this.$store.state.taskList as Task[];
+            let taskNum = task_list.filter((i)=>{
+                    return dayjs(i.create_time).isSame(dayjs(new Date()).add(-1,'day'), 'day');
+                }).length;
+            let finishNum = task_list.filter((i)=>{
+                    return i.finishTime 
+                            && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day') 
+                            && dayjs(i.create_time).isSame(dayjs(new Date()).add(-1, 'day'), 'day');
+            }).length;
+            if (taskNum === 0) return '0';
+            return ((finishNum / taskNum) * 100).toFixed(0);
+        }
+
+        get taskThisWeek():Task[] {
+            const task_list = this.$store.state.taskList as Task[];
+            const currentDay = new Date();
+            const thisWeekStart = dayjs(currentDay).add(-(currentDay.getDay() - 1), 'day');
+            const thisWeekEnd = thisWeekStart.add(7, 'day');
+            
+            if(task_list && task_list.length > 0) {
+                 return task_list.filter((i)=>{
+                    if (i.status === 0) return false;
+                    if (dayjs(i.create_time).isAfter(thisWeekStart.add(-1, 'day')) && dayjs(i.create_time).isBefore(thisWeekEnd.add(1, 'day')))
+                        return true;
+                });
+            } else {
+                return [];
+            }
+        }
+
+        get finishedTaskNumThisWeek():number {
+            return this.taskThisWeek.filter((i)=>{
+                return i.status === 2;
+            }).length;
+        }
+
+        get taskRateThisWeek():number {
+            if (this.taskThisWeek.length === 0) {
+                return 0;
+            } else {
+                return Number((this.finishedTaskNumThisWeek / this.taskThisWeek.length * 100).toFixed(0));
+            }
+        }
+
+        get allFinishedTask():Task[] {
+            const task_list = this.$store.state.taskList as Task[];
+            return task_list.filter(i => i.status === 2);
+        }
+
+        get projectNameList():string[] {
+            const projectList = this.$store.state.projectList as Project[];
+            const taskList = this.$store.state.taskList as Task[];            
+            let result = [];
+            for(let p of projectList) {
+                let num = taskList.filter(item => item.project_id === p.id && item.status === 2).length;
+                if(num !== 0) {
+                    result.push(p.name);
+                } 
+            }   
+
+            if(result && result.length > 0) { 
+                return ['收集箱', ...result];
+            } else {
+                return ['收集箱'];
+            }
+        }
+
+        
+
+        get projectDataList():Series[] {
+            const projectList = this.$store.state.projectList as Project[];
+            const taskList = this.$store.state.taskList as Task[];
+
+            const taskNum = taskList.filter(i => i.status === 2 && i.project_id === '-1').length;
+            let result = [];
+
+            for(let p of projectList) {
+                let num = taskList.filter(item => item.project_id === p.id && item.status === 2).length;
+                // console.log(i.name, num);
+                if(num !== 0) {
+                    result.push({ value: num, name: p.name, itemStyle: {color: p.color}});
+                } 
+            }
+
+            if(result && result.length > 0) {
+                return [{value: taskNum, name: '收集箱', itemStyle: {color: '#808CCF'}}, ...result]
+            } else {
+                return [{value: taskNum, name: '收集箱', itemStyle: {color: '#808CCF'}}];
+            }
+        }
+
         option = {
             baseOption: {
                 title : {
-                text: '完成任务情况',
-                subtext: '纯属虚构',
+                text: '项目情况概览',
+                subtext: '各项目已完成待办占总完成待办比',
                 x:'center'
             },
             tooltip : {
@@ -25,70 +183,27 @@ import Chart from "@/components/Chart.vue"
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
             legend: {
-                data:['rose1','rose2','rose3','rose4','rose5','rose6','rose7','rose8']
+                data: this.projectNameList
             },
             toolbox: {
                 show : true,
                 feature : {
-                    // mark : {show: true},
-                    // dataView : {show: true, readOnly: false},
+
                     magicType : {
                         show: true,
                         type: ['pie', 'funnel']
                     },
-                    // restore : {show: true},
-                    // saveAsImage : {show: true}
                 }
             },
             calculable : true,
             series : [
-                // {
-                //     name:'半径模式',
-                //     type:'pie',
-                //     roseType : 'radius',
-                //     label: {
-                //         normal: {
-                //             show: false
-                //         },
-                //         emphasis: {
-                //             show: true
-                //         }
-                //     },
-                //     lableLine: {
-                //         normal: {
-                //             show: false
-                //         },
-                //         emphasis: {
-                //             show: true
-                //         }
-                //     },
-                //     data:[
-                //         {value:10, name:'rose1'},
-                //         {value:5, name:'rose2'},
-                //         {value:15, name:'rose3'},
-                //         {value:25, name:'rose4'},
-                //         {value:20, name:'rose5'},
-                //         {value:35, name:'rose6'},
-                //         {value:30, name:'rose7'},
-                //         {value:40, name:'rose8'}
-                //     ]
-                // },
                 {
-                    name:'面积模式',
+                    name:'完成待办占比',
                     type:'pie',
                     roseType : 'area',
-                    data:[
-                        {value:10, name:'rose1'},
-                        {value:5, name:'rose2'},
-                        {value:15, name:'rose3'},
-                        {value:25, name:'rose4'},
-                        {value:20, name:'rose5'},
-                        {value:35, name:'rose6'},
-                        {value:30, name:'rose7'},
-                        {value:40, name:'rose8'}
-                    ]
+                    data: this.projectDataList,
                 }
-            ]
+            ],
             },
             media: [
                 {
@@ -99,10 +214,6 @@ import Chart from "@/components/Chart.vue"
                             orient: 'horizontal'
                         },
                         series: [
-                            // {
-                            //     radius: [20, '50%'],
-                            //     center: ['50%', '50%']
-                            // },
                             {
                                 radius: [30, '50%'],
                                 center: ['50%', '50%']
@@ -121,10 +232,6 @@ import Chart from "@/components/Chart.vue"
                             orient: 'horizontal'
                         },
                         series: [
-                            // {
-                            //     radius: [20, '50%'],
-                            //     center: ['25%', '50%']
-                            // },
                             {
                                 radius: [30, '50%'],
                                 center: ['50%', '50%']
@@ -143,10 +250,6 @@ import Chart from "@/components/Chart.vue"
                             orient: 'horizontal'
                         },
                         series: [
-                            // {
-                            //     radius: [20, '50%'],
-                            //     center: ['50%', '30%']
-                            // },
                             {
                                 radius: [30, '50%'],
                                 center: ['50%', '50%']
@@ -165,10 +268,6 @@ import Chart from "@/components/Chart.vue"
                             orient: 'vertical'
                         },
                         series: [
-                            // {
-                            //     radius: [20, '50%'],
-                            //     center: ['50%', '30%']
-                            // },
                             {
                                 radius: [30, '50%'],
                                 center: ['50%', '50%']
@@ -183,10 +282,108 @@ import Chart from "@/components/Chart.vue"
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/style/common.scss";
+$item-margin: 16px;
+$item-radius: 12px;
 .stats {
-    // padding-top: 36px;
-    margin-left: auto;
-    margin-right: auto;
-    // border: 1px solid red;
+    & > .empty {
+        text-align: center;
+        & > .icon-empty {
+            width: 700px;
+            height: 400px;
+            padding-top: 24px;
+        }
+        @media (max-width:500px) {
+             & > .icon-empty {
+                width: 320px;
+                height: 200px;
+             }
+        }
+
+    }
+
+    & > .data {
+        width: 100%;
+        height: 100%;
+    }
+
+    .infos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-top: 24px;
+
+        @media(max-width: 500px) {
+            flex-direction: column;
+            padding-top: 0;
+            // align-items: start;
+        }
+
+    }
+
+    .yesterday-info {
+        display: flex;
+        margin-right: $item-margin;
+        & > li {
+            border: 1px solid $color-border-1;
+            border-radius: $item-radius;
+            width: 150px;
+            height: 150px;
+            margin-left: 20px;
+            &:hover {
+                background:rgb(242, 246, 250);
+            }
+            & span {
+                font-size: 50px;
+                line-height: 50px;
+                font-weight: 800;
+                color: $color-font-normal;
+            }
+            display: flex;
+            flex-direction: column;
+            // justify-content: flex-start;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        @media(max-width: 500px) {
+            & > li {
+                width:100px;
+                height: 100px;
+
+                & span {
+                    font-size: 40px;
+                    line-height: 40px;
+                }
+            }
+        }
+    }
+
+    .week-info {
+        display: flex;
+        height: 150px;
+        border: 1px solid $color-border-1;
+        display: flex;
+        align-items: center;
+        border-radius: $item-radius;
+        padding: 0 16px;
+       
+        @media (max-width: 500px) {
+            height: 120px;
+            width: 220px;
+            margin-top: 16px;
+        }
+
+        &:hover {
+            background:rgb(242, 246, 250);
+        }
+    }
+
+    .desc {
+        font-size: 12px;
+        color: $color-font-secondary;
+        padding-top: 8px;
+    }
 }
 </style>
