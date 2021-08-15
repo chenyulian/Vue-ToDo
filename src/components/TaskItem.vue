@@ -7,21 +7,23 @@
                 <div class="check-box" @click="finishTask(task.id)">
                     <Icon name="tick" class="tick" />
                 </div>
-                <div class="task-content">{{task.content}}</div>
+                <div class="task-content" :class="{'overdue-text':isOverdue}">{{task.content}}</div>
                 <div class="task-operation">
                     <i class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
                 </div>
             </div>
              
             <div class="task-info">
-                <div class="task-due-date">
+                <div class="task-due-date" :class="{'overdue-text':isOverdue}">
                     <i class="el-icon-date"></i>
                     {{taskDueDate}}
                 </div>
                 <div class="task-project" v-if="showProjectName" style="display:flex; align-items: center">
-                    <div class="colored-sign" :style="color && `background-color:${color};`"></div>
+                    <div class="colored-sign" v-if="task.project_id !== '-1'" :style="color && `background-color:${color};`"></div>
+                     <el-tag type="danger" size="small" v-if="isOverdue" class="overdue-tag">已过期</el-tag>
                     <span>{{taskProjectName}}</span>
                 </div>
+                 
             </div>
         </div>
     </div>
@@ -62,6 +64,15 @@
             this.$store.commit("fetchProjectList");
         }
 
+        get isOverdue():boolean {            
+            if (this.task.due_date !== null) {
+                if(dayjs(this.task.due_date).isBefore(dayjs(new Date()), 'day') && this.task.status === 1) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         get taskProjectName():string {
             if(this.task.project_id === "-1") {
                 return "收集箱";
@@ -293,5 +304,17 @@
     height: 8px;
     border-radius: 6px;
     margin-right: 4px;
+}
+
+.overdue-tag {
+    display: block;
+    margin-right: 4px;
+    @media (max-width: 500px) {
+        display: none;
+    }
+}
+
+.overdue-text {
+    color: #F56C6C;
 }
 </style>

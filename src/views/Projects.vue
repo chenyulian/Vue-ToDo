@@ -41,7 +41,7 @@
                     <div class="info">
                         <h3 class="small" :style="{color: getDark('#888aaf')}">收集箱</h3>
                         <div class="task-number" :style="{color: getDark('#888aaf')}"><span>{{taskList.length || 0}}</span>个任务</div>
-                        <el-progress :percentage="finishRate" :color="getDark('#888aaf')"></el-progress>
+                        <!-- <el-progress :percentage="finishRate" :color="getDark('#888aaf')"></el-progress> -->
                     </div>
                     <!-- <div class="more">-</div> -->
                 </el-carousel-item>
@@ -320,13 +320,6 @@ import Utils from "@/lib/Utils";
 }
 .task-list {
     overflow: auto;
-    margin-bottom: 12px;
-    & > li {
-        &:not(:last-child) {
-            margin-bottom: 4px;
-        }
-        
-    }
 }
 
 .check-box {

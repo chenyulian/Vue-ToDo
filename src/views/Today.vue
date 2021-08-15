@@ -10,6 +10,10 @@
        
         <div class="task_list">
             <ul>
+                <li v-for="task in overdue_list" :key="task.id">
+                    <TaskItem :taskId = "task.id" @edit="editTask(task.id)" />
+                    <!-- <hr /> -->
+                </li>
                 <li v-for="task in task_list" :key="task.id">
                     <TaskItem :taskId = "task.id" @edit="editTask(task.id)" v-if="showFinished?true:(task.status !== 2)" />
                     <!-- <hr /> -->
@@ -49,6 +53,20 @@
             return task_list.filter((task)=>{
                 if(task.due_date !== null) {
                     if(dayjs(task.due_date).isSame(dayjs(new Date()),"day")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return false;
+            });
+        }
+
+        get overdue_list():Task[] {
+            const task_list = (this.$store.state.taskList || []) as Task[];
+            return task_list.filter((task)=>{
+                if(task.due_date !== null) {
+                    if(dayjs(task.due_date).isBefore(dayjs(new Date()),"day") && task.status === 1) {
                         return true;
                     } else {
                         return false;
