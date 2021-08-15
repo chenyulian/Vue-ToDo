@@ -1,4 +1,4 @@
-# self-care-dashboard
+# Vue-ToDo
 
 ## Project setup
 ```
