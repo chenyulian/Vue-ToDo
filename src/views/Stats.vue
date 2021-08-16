@@ -1,6 +1,6 @@
 <template>
     <div class="stats">
-        <div class="data" v-if="xxx">
+        <div class="data" v-if="hasData">
             <Chart :option="option" />
             <div class="infos">
                 <ul class="yesterday-info">
@@ -54,14 +54,17 @@ import Project from "@/lib/Project";
         {components: {Chart}
     })
     export default class Stats extends Vue{
-        xxx = true;
-
-        // taskList:Task[] = [];
-
+        
         beforeCreate():void {
             this.$store.commit("fetchTaskList");
             this.$store.commit("fetchProjectList")
             // this.taskList = this.$store.state.taskList as Task[];
+        }
+
+        get hasData():boolean {
+            const task_list = this.$store.state.taskList as Task[];
+            if(task_list === undefined || task_list.length === 0) return false;
+            return task_list.filter(i => i.status === 2).length > 0;
         }
 
         // 昨日完成待办
@@ -99,18 +102,21 @@ import Project from "@/lib/Project";
             const thisWeekStart = dayjs(currentDay).add(-(currentDay.getDay() - 1), 'day');
             const thisWeekEnd = thisWeekStart.add(7, 'day');
             
-            if(task_list && task_list.length > 0) {
+            if(task_list && task_list.length > 0) {                
                  return task_list.filter((i)=>{
                     if (i.status === 0) return false;
-                    if (dayjs(i.create_time).isAfter(thisWeekStart.add(-1, 'day')) && dayjs(i.create_time).isBefore(thisWeekEnd.add(1, 'day')))
+                    if (dayjs(i.create_time).isAfter(thisWeekStart.add(-1, 'day'), 'day') && dayjs(i.create_time).isBefore(thisWeekEnd))
                         return true;
                 });
             } else {
                 return [];
             }
+            
         }
 
         get finishedTaskNumThisWeek():number {
+            console.log(this.taskThisWeek); 
+            
             return this.taskThisWeek.filter((i)=>{
                 return i.status === 2;
             }).length;

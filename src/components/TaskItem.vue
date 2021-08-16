@@ -19,8 +19,8 @@
                     {{taskDueDate}}
                 </div>
                 <div class="task-project" v-if="showProjectName" style="display:flex; align-items: center">
+                    <el-tag type="danger" size="small" v-if="isOverdue" class="overdue-tag">已过期</el-tag>
                     <div class="colored-sign" v-if="task.project_id !== '-1'" :style="color && `background-color:${color};`"></div>
-                     <el-tag type="danger" size="small" v-if="isOverdue" class="overdue-tag">已过期</el-tag>
                     <span>{{taskProjectName}}</span>
                 </div>
                  
