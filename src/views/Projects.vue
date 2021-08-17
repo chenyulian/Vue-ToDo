@@ -8,15 +8,10 @@
         <div class="block">
             <el-carousel trigger="click" :autoplay="false" arrow="never"  @change="change" height="150px">
                 <el-carousel-item :key="'-1'" style="background: #9b9cbc;">
-                    <!-- <div class="progress">
-                        <el-progress type="circle" :percentage="0" :width="64"></el-progress>
-                    </div> -->
                     <div class="info">
                         <h3 class="small" :style="{color: getDark('#888aaf')}">收集箱</h3>
                         <div class="task-number" :style="{color: getDark('#888aaf')}"><span>{{taskList.length || 0}}</span>个任务</div>
-                        <!-- <el-progress :percentage="finishRate" :color="getDark('#888aaf')"></el-progress> -->
                     </div>
-                    <!-- <div class="more">-</div> -->
                 </el-carousel-item>
 
                 <el-carousel-item v-for="item in projectList" :key="item.id" :style="{backgroundColor:getLight(item.color)}">
@@ -39,9 +34,7 @@
         
         <ul class="task-list">
             <li v-for="task in taskList" :key="task.id" >
-                <!-- <transition name="fade"> -->
-                    <task-item :taskId="task.id" :showProjectName="false" v-if="showFinished?true:(task.status !== 2)"/>
-                <!-- </transition> -->
+                <task-item :taskId="task.id" :showProjectName="false" v-if="showFinished?true:(task.status !== 2)"/>
             </li>
         </ul>
         <div class="add_task">
@@ -57,14 +50,13 @@ import Project from "@/lib/Project";
 import Task from "@/lib/Task";
 import Vue from "vue";
 import Component from "vue-class-component";
-import TaskDialog from "@/components/dialogs/TaskDialog.vue";
 import TaskItem from "@/components/TaskItem.vue";
 import AddTaskButton from "@/components/AddTaskButton.vue";
 import { openDialog } from "@/lib/openDialog";
 import Utils from "@/lib/Utils";
 
     @Component({
-            components: {TaskDialog,TaskItem,AddTaskButton}
+            components: {TaskItem,AddTaskButton}
         }
     )
     export default class Projects extends Vue {
@@ -254,16 +246,8 @@ import Utils from "@/lib/Utils";
     padding: 10px;
     display: flex;
     justify-content: space-between;
-    // align-items: center;
     align-items: start;
     padding-bottom: 12px;
-
-    // & > div:not(&:last-child) {
-    //     transform: translateY(24px);
-    // }
-    // & > div {
-    //     // transform: translateY(-24px);
-    // }
 
     & > .info {
         flex-grow: 1;
@@ -288,7 +272,6 @@ import Utils from "@/lib/Utils";
     border-radius: 9px;
     position: relative;
     flex-shrink: 0;
-    // margin: 4px;
     &:hover {
         background-color: #808CCF;
         cursor: pointer;
@@ -331,12 +314,5 @@ div.task-number {
     &:hover {
         cursor: pointer;
     }
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
 }
 </style>

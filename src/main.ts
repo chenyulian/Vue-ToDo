@@ -3,46 +3,26 @@ import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';
 import store from './store';
-import Nav from './components/Nav.vue';
-import Sidebar from './components/Sidebar.vue';
 import Icon from './components/Icon.vue';
 import TaskEditor from './components/TaskEditor.vue';
-import { Button, Dialog, Select, Option, FormItem, Form, Input, Popover,
-         DatePicker, Radio, RadioGroup, Cascader, Switch, Table, TableColumn,
-         Tooltip, Tag,Divider,ColorPicker,Calendar, Timeline, TimelineItem, Message,
-        Carousel, CarouselItem, Progress, Image} from 'element-ui';
+import { Button, Select,  Input, Popover, DatePicker,
+         Tooltip, Tag,Divider,Message,
+        Carousel, CarouselItem, Progress} from 'element-ui';
 
 Vue.config.productionTip = false;
-Vue.component('Nav', Nav);
-Vue.component('Sidebar', Sidebar);
 Vue.component('Icon', Icon);
 Vue.component('TaskEditor', TaskEditor);
 Vue.component(Button.name, Button);
-Vue.component(Dialog.name, Dialog);
 Vue.component(Select.name, Select);
-Vue.component(Option.name, Option);
-Vue.component(FormItem.name, FormItem);
-Vue.component(Form.name, Form);
 Vue.component(Input.name, Input);
 Vue.component(Popover.name, Popover);
 Vue.component(DatePicker.name, DatePicker);
-Vue.component(Radio.name, Radio);
-Vue.component(RadioGroup.name, RadioGroup);
-Vue.component(Cascader.name, Cascader);
-Vue.component(Switch.name, Switch);
-Vue.component(Table.name, Table);
-Vue.component(TableColumn.name, TableColumn);
 Vue.component(Tooltip.name, Tooltip);
 Vue.component(Tag.name, Tag);
 Vue.component(Divider.name, Divider);
-Vue.component(ColorPicker.name, ColorPicker);
-Vue.component(Calendar.name, Calendar);
-Vue.component(Timeline.name, Timeline);
-Vue.component(TimelineItem.name, TimelineItem);
 Vue.component(Carousel.name, Carousel);
 Vue.component(CarouselItem.name, CarouselItem);
 Vue.component(Progress.name, Progress);
-Vue.component(Image.name, Image);
 Vue.prototype.$message = Message;
 
 new Vue({

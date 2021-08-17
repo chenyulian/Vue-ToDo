@@ -58,7 +58,6 @@ import Project from "@/lib/Project";
         beforeCreate():void {
             this.$store.commit("fetchTaskList");
             this.$store.commit("fetchProjectList")
-            // this.taskList = this.$store.state.taskList as Task[];
         }
 
         get hasData():boolean {
@@ -69,9 +68,7 @@ import Project from "@/lib/Project";
 
         // 昨日完成待办
         get taskNumYesterday():number {
-            const task_list = this.$store.state.taskList as Task[];
-            console.log(task_list);
-            
+            const task_list = this.$store.state.taskList as Task[];            
             if(task_list && task_list.length > 0) {
                 return task_list.filter((i)=>{                    
                     return i.finishTime && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day');
@@ -115,7 +112,6 @@ import Project from "@/lib/Project";
         }
 
         get finishedTaskNumThisWeek():number {
-            console.log(this.taskThisWeek); 
             
             return this.taskThisWeek.filter((i)=>{
                 return i.status === 2;
@@ -164,7 +160,6 @@ import Project from "@/lib/Project";
 
             for(let p of projectList) {
                 let num = taskList.filter(item => item.project_id === p.id && item.status === 2).length;
-                // console.log(i.name, num);
                 if(num !== 0) {
                     result.push({ value: num, name: p.name, itemStyle: {color: p.color}});
                 } 
@@ -347,7 +342,6 @@ $item-radius: 12px;
             }
             display: flex;
             flex-direction: column;
-            // justify-content: flex-start;
             align-items: center;
             justify-content: center;
 

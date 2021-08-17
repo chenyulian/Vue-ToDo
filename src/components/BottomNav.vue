@@ -8,7 +8,6 @@
             <li :class="selected === 3?'selected':''" @click="select(3)"><Icon name="statistics" class="icon-todo" />
                 <span>数据</span>
             </li>
-            <!-- <li :class="selected === 4?'selected':''" @click="select(4)"><Icon name="about" class="icon-todo" /><span>关于</span></li> -->
         </ul>
         <div class="nav-selected-color" :class="`selected-${selected}`"></div>
     </div>
@@ -22,11 +21,9 @@
         selected = 1;
         
         created():void {
-            console.log(this.$route.path);
             if(this.$route.path === '/today') this.selected = 1;
             if(this.$route.path === '/projects') this.selected = 2;
             if(this.$route.path === '/stats') this.selected = 3;
-            // if(this.$route.path === '/about') this.selected = 4;
         }
         select(index: number):void {
             this.selected = index;
@@ -41,9 +38,6 @@
             if(this.selected === 3 && this.$route.path !== '/stats' ) {
                 this.$router.push("/stats");
             }
-            // if(this.selected === 4 && this.$route.path !== '/about') {
-            //     this.$router.push("/about");
-            // }
         }
     }
 </script>
@@ -56,19 +50,9 @@ $seletedWidth: 76px;
 $projectWidth: 96px;
 $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
 .bottom-nav {
-//   display: none;
-//   position: absolute;
-//   bottom: 0;
-//   left: 0;
-//   width: 320px;
-  
   position: relative;
   padding: 120px 8px;
   min-width: 300px;
-//   
-  
-//   
-//   border: 1px solid red;
   background: white;
   z-index: 2;
   border-right: 1px solid #E8E8EA;
@@ -115,9 +99,7 @@ $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
     align-items: center;
     height: 100%;
     & > li {
-        // border: 1px solid blue;
         display: flex;
-        // justify-content: space-between;
         flex-wrap: nowrap;
         padding: 6px 16px;
         margin-bottom: 8px;
@@ -134,7 +116,6 @@ $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
 
         &.selected {
             color: #37429B;
-            //  background:#ccd0e0;;
         }
 
         &:hover {

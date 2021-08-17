@@ -1,16 +1,8 @@
 <template>
   <div id="app">
-    <!-- <Nav @toggleSidebar="isShowSidebar = !isShowSidebar" /> -->
     <main>
-      <!-- <transition name="slide-fade">
-        <Sidebar v-if="isShowSidebar"
-               :addProjectDialogVisible.sync="addProjectDialogVisible"/>
-      </transition> -->
-      
       <router-view class="content" />
       <BottomNav />
-      <!-- dialogs -->
-      <!-- <add-project-dialog :visible.sync="addProjectDialogVisible" /> -->
     </main>
   </div>
 </template>
@@ -18,10 +10,9 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import AddProjectDialog from "@/components/dialogs/AddProjectDialog.vue";
 import BottomNav from "@/components/BottomNav.vue";
 @Component({
-  components: {AddProjectDialog, BottomNav}
+  components: {BottomNav}
 })
 export default class App extends Vue {
   isShowSidebar = true;
