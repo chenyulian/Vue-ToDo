@@ -4,7 +4,10 @@
         </div>
         <div class="dialog-wrapper">
           <div class="dialog">
-            <header><span>编辑项目</span><el-button type="primary" round @click="submitNewProject" :disabled="projectName === ''">保存</el-button></header>
+            <header><span>编辑项目</span>
+            <i class="el-icon-delete"  v-if="projectId" @click="deleteProject"></i>
+            <el-button type="primary" round @click="submitNewProject" :disabled="projectName === ''">保存</el-button>
+            </header>
             <div class="main">
               <div class="project-name-container">
                 <h4>项目名称</h4>
@@ -20,7 +23,7 @@
                   </ul>
                </div>
             </div>
-
+            
           </div>
         </div>
     </div>
@@ -92,6 +95,15 @@
 
         selectColor(color: string):void {
           this.projectColor = color;
+        }
+
+        deleteProject():void {
+          this.$store.commit('deleteProject', this.projectId);
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          });
+          this.$emit('update:visible', false);
         }
 
         close():void {

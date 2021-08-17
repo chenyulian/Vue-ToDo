@@ -4,33 +4,6 @@
             <h2>项目</h2>
             <el-button type="primary" round @click="openAddProjectDialog(undefined)">添加项目</el-button>
         </header>
-                
-        <!-- <ul class="filters">
-            <li class="selected">全部</li>
-            <li>进行中</li>
-            <li>已完成</li>
-        </ul> -->
-        <!-- <ul class="project-list">
-            <li>
-                <div class="project_left">
-                    <div class="name"><strong>收集箱</strong></div>
-                    <div class="info">还剩<span>{{taskNumber["-1"]}}</span>个任务</div>
-                </div>
-                <div class="progress">占位222</div>
-                <div><Icon name="more" class="more" /></div>
-            </li> -->
-            <!-- <li v-for="project in projectList" :key="project.id" :style="{backgroundColor: project.color}">
-                <div class="project_left">
-                    <div class="name"><strong>{{project.name}}</strong></div>
-                    <div class="info">还剩<span>{{taskNumber[project.id]}}</span>个任务</div>
-                </div>
-                <div class="progress">占位222</div>
-                <div @click="$router.push(`/projects/${project.id}`)"><Icon name="more" class="more" /></div>
-            </li> -->
-        <!-- </ul> -->
-        <!-- <div class="button-container">
-            <el-button type="primary" icon="el-icon-plus" circle></el-button>
-        </div> -->
         
         <div class="block">
             <el-carousel trigger="click" :autoplay="false" arrow="never"  @change="change" height="150px">
@@ -47,9 +20,6 @@
                 </el-carousel-item>
 
                 <el-carousel-item v-for="item in projectList" :key="item.id" :style="{backgroundColor:getLight(item.color)}">
-                    <!-- <div class="progress">
-                        <el-progress type="circle" :percentage="70" :width="64" :color="getDark(item.color)"></el-progress>
-                    </div> -->
                     <div class="info">
                         <h3 class="small" :style="{color: getDark(item.color)}">{{ item.name }}</h3>
                         <div class="task-number" :style="{color: getDark(item.color)}"><span>{{taskList.length || 0}}</span>个任务</div>
@@ -111,16 +81,6 @@ import Utils from "@/lib/Utils";
         created():void {
             this.$store.commit("fetchProjectList");
             this.$store.commit("fetchTaskList");
-            // this.projectList = this.$store.state.projectList as Project[];
-            // const taskList = this.$store.state.taskList as Task[];
-            // for(let project of this.projectList) {
-            //     let taskNumber = taskList.filter(i => i.project_id === project.id && i.status === 1).length;
-            //     Object.defineProperty(this.taskNumber, project.id, {value: taskNumber});
-            // }
-            // Object.defineProperty(this.taskNumber, 
-            //                     "-1", 
-            //                     {value: taskList.filter(i => i.project_id === "-1" && i.status === 1).length} || 0);
-
         }
 
         get finishRate():number {
@@ -132,16 +92,12 @@ import Utils from "@/lib/Utils";
 
         get taskList():Task[] {
             const taskList = this.$store.state.taskList as Task[];
-            return taskList.filter(i => i.project_id === this.projectId);
+            return taskList.filter(i => i.project_id === this.projectId && i.status !== 0);
         }
 
         get projectList():Project[] {
-            return this.$store.state.projectList as Project[];
+            return (this.$store.state.projectList as Project[]).filter(i => i.status !== 0);
         }
-
-        // get progress(projectId:string):number {
-            
-        // }
 
         change(index: number):void {
             console.log(index);
@@ -150,10 +106,6 @@ import Utils from "@/lib/Utils";
             } else {
                 this.projectId = this.projectList[index - 1].id;
             }
-        }
-
-        editTask(id:string):void {
-            console.log(id)
         }
 
         deleteTask(id:string):void {
@@ -320,6 +272,12 @@ import Utils from "@/lib/Utils";
 }
 .task-list {
     overflow: auto;
+    margin-bottom: 12px;
+    &>li {
+        &:not(:last-child) {
+            margin-bottom: 4px;
+        }
+    }
 }
 
 .check-box {

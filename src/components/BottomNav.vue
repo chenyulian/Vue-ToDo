@@ -8,7 +8,7 @@
             <li :class="selected === 3?'selected':''" @click="select(3)"><Icon name="statistics" class="icon-todo" />
                 <span>数据</span>
             </li>
-            <li :class="selected === 4?'selected':''" @click="select(4)"><Icon name="about" class="icon-todo" /><span>关于</span></li>
+            <!-- <li :class="selected === 4?'selected':''" @click="select(4)"><Icon name="about" class="icon-todo" /><span>关于</span></li> -->
         </ul>
         <div class="nav-selected-color" :class="`selected-${selected}`"></div>
     </div>
@@ -26,7 +26,7 @@
             if(this.$route.path === '/today') this.selected = 1;
             if(this.$route.path === '/projects') this.selected = 2;
             if(this.$route.path === '/stats') this.selected = 3;
-            if(this.$route.path === '/about') this.selected = 4;
+            // if(this.$route.path === '/about') this.selected = 4;
         }
         select(index: number):void {
             this.selected = index;
@@ -41,9 +41,9 @@
             if(this.selected === 3 && this.$route.path !== '/stats' ) {
                 this.$router.push("/stats");
             }
-            if(this.selected === 4 && this.$route.path !== '/about') {
-                this.$router.push("/about");
-            }
+            // if(this.selected === 4 && this.$route.path !== '/about') {
+            //     this.$router.push("/about");
+            // }
         }
     }
 </script>
@@ -54,7 +54,7 @@
 
 $seletedWidth: 76px;
 $projectWidth: 96px;
-$spacing: calc((100vw - 4 * #{$seletedWidth}) / 5);
+$spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
 .bottom-nav {
 //   display: none;
 //   position: absolute;

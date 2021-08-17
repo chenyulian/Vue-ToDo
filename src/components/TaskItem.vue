@@ -9,7 +9,21 @@
                 </div>
                 <div class="task-content" :class="{'overdue-text':isOverdue}">{{task.content}}</div>
                 <div class="task-operation">
-                    <i class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
+                    <i v-if="task.status === 1" class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
+                    <i  v-else class="el-icon-delete icon-delete" v-popover:popover></i>
+                     <el-popover
+                        placement="top"
+                        width="160"
+                        ref="popover"
+                        v-model="popoverVisible"
+                        >
+                        <p style="">确定删除吗？</p>
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="mini" type="text" @click="popoverVisible = false">取消</el-button>
+                            <el-button type="primary" size="mini" @click="deleteTask(taskId)">确定</el-button>
+                        </div>
+                       
+                    </el-popover>
                 </div>
             </div>
              
@@ -54,6 +68,8 @@
         showProjectName!: boolean;
 
         isEditing = false;
+
+        popoverVisible = false;
 
         get task():Task {
             return (this.$store.state.taskList as Task[]).find(i => i.id === this.taskId) || new Task();
@@ -185,8 +201,15 @@
                 }
             }
 
-            & .task-operation {
-                display: none !important;
+            & .task-operation {       
+                // width: 100%;
+                & .icon-edit {
+                     display: none !important;        
+                }             
+                
+                & .icon-delete {
+                   margin-left: 12px;
+                }
             }
 
         }
@@ -205,7 +228,7 @@
 
             & .task-operation {
                 color: $color-font-secondary;
-                display: none;
+                // display: none;
                 &:hover {
                     cursor: pointer;
                 }
@@ -236,7 +259,10 @@
                 }
 
                 & .task-operation {
-                    display: none;
+                    & .icon-edit {
+                        display: none;
+                    }
+                    
                 }
             
             }
