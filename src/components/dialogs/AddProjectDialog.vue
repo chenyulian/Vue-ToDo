@@ -5,7 +5,7 @@
         <div class="dialog-wrapper">
           <div class="dialog">
             <header><span>编辑项目</span>
-            <i class="el-icon-delete"  v-if="projectId" @click="deleteProject"></i>
+            <i class="el-icon-delete icon-delete"  v-if="projectId" @click="deleteProject"></i>
             <el-button type="primary" round @click="submitNewProject" :disabled="projectName === ''">保存</el-button>
             </header>
             <div class="main">
@@ -52,15 +52,6 @@
         focused = false;
 
         colorList = colorList;
-
-        // get project():Project {
-        //   const currentProject = this.$store.state.currentProjectForDialog as Project;
-        //   return currentProject;
-        // }
-
-        // set project(value:Project) {
-        //   this.$store.commit("updateCurrentProject",value);
-        // }
 
         created():void {
           if(this.projectId === undefined) {
@@ -114,6 +105,8 @@
 </script>
 
 <style lang="scss" scoped>
+
+@import "~@/assets/style/common.scss";
 $radius: 4px;
 $border-color: #d9d9d9;
 
@@ -197,5 +190,10 @@ $border-color: #d9d9d9;
       }
     }
   }
+}
+
+.icon-delete:hover {
+  cursor: pointer;
+  color: $color-theme;
 }
 </style>

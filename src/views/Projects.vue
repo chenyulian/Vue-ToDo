@@ -34,7 +34,7 @@
         
         <ul class="task-list">
             <li v-for="task in taskList" :key="task.id" >
-                <task-item :taskId="task.id" :showProjectName="false" v-if="showFinished?true:(task.status !== 2)"/>
+                <task-item :taskId="task.id" :showProjectName="false" class="task-item" v-if="showFinished?true:(task.status !== 2)" />
             </li>
         </ul>
         <div class="add_task">
@@ -61,7 +61,6 @@ import Utils from "@/lib/Utils";
     )
     export default class Projects extends Vue {
 
-        // projectList:Project[] = [];
         projectId = "-1";
         taskNumber = {};
         isAdding = false;
@@ -136,7 +135,6 @@ import Utils from "@/lib/Utils";
     max-width: 746px;
     margin-left: auto;
     margin-right: auto;
-    // margin-top: 24px;
     
     overflow: hidden;
     @media (max-width: 500px) {
@@ -146,90 +144,6 @@ import Utils from "@/lib/Utils";
     & > header {
         display: flex;
         justify-content: space-between;
-    }
-}
-.filters {
-    display: flex;
-    height: 48px;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 16px;
-    & > li {
-        height: 48px;
-        width: 86px;
-        text-align: center;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-
-        &.selected {
-            background: #e4e8f4;
-            color: #37429B;
-            font-weight: 600;
-        }
-    }
-}
-
- .project-list {
-        margin-top: 16px;
-        flex-grow: 1;
-        overflow: auto;
-        & > li {
-            background:  white;
-            border-radius: 16px;
-            color: #37429B;
-            border: 1px solid #eee;
-            height: 96px;
-            margin-bottom: 24px;
-            padding: 4px 16px;
-            display: flex;
-
-            & > div:first-child {
-                flex-grow: 1;
-            }
-
-            & .more {
-                width: 1.5em;
-                height: 1.5em;
-            }
-
-            & .project_left {
-                .name {
-                    font-size: 20px;
-                    max-width: 50vw;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-                .info {
-                    font-size: 12px;
-                    margin-top: 10px;
-                }
-            }
-
-            align-items: center;
-        }
-
-        @media (max-width: 500px) {
-            & > li {
-                background: #37429B;
-                color: white;
-                height: 150px;
-                & .progress {
-                    padding: 4px;
-                    margin-right: 4px;
-                }
-            }
-        }
-}
-.button-container {
-    position: absolute;
-    right: 24px;
-    bottom: 72px;
-    & > button {
-        background: #686A9A;
     }
 }
 
@@ -256,24 +170,21 @@ import Utils from "@/lib/Utils";
 }
 .task-list {
     overflow: auto;
-    margin-bottom: 12px;
-    &>li {
-        &:not(:last-child) {
-            margin-bottom: 4px;
-        }
+    & > li > .task-item {
+        margin-bottom: 4px;
     }
 }
 
 .check-box {
     width: 18px;
     height: 18px;
-    border: 1px solid #808CCF;
+    border: 1px solid $color-theme;
     background-color: white;
     border-radius: 9px;
     position: relative;
     flex-shrink: 0;
     &:hover {
-        background-color: #808CCF;
+        background-color: $color-theme;
         cursor: pointer;
         .tick {
             display: block;

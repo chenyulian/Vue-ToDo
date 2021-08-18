@@ -10,7 +10,7 @@
                 <div class="task-content" :class="{'overdue-text':isOverdue}">{{task.content}}</div>
                 <div class="task-operation">
                     <i v-if="task.status === 1" class="el-icon-edit-outline icon-edit" @click="isEditing = true"></i>
-                    <i  v-else class="el-icon-delete icon-delete" v-popover:popover></i>
+                    <i v-else class="el-icon-delete icon-delete" v-popover:popover></i>
                      <el-popover
                         placement="top"
                         width="160"
@@ -22,7 +22,6 @@
                             <el-button size="mini" type="text" @click="popoverVisible = false">取消</el-button>
                             <el-button type="primary" size="mini" @click="deleteTask(taskId)">确定</el-button>
                         </div>
-                       
                     </el-popover>
                 </div>
             </div>
@@ -181,6 +180,11 @@
         display: flex;
         flex-direction: column;
         padding: 4px;
+
+        & .icon-delete:hover {
+            cursor: pointer;
+            color: $color-theme;
+        }
 
         @media (max-width: 500px) {
             flex-direction: row;
