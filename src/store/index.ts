@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import Task from '@/lib/Task'
 import { RootState } from '@/custom'
 import Project from '@/lib/Project'
-import Block from '@/lib/Block'
 import createId from '@/lib/createId'
 import clone from '@/lib/clone'
 
@@ -12,10 +11,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     taskList: [],
-    // todayTaskList: [],
     projectList: [],
-    blockList: [],
-    currentProjectForDialog: new Project()
   } as RootState,
   mutations: {
     fetchTaskList(state) {
@@ -99,50 +95,6 @@ const store = new Vuex.Store({
       if(project) project.status = 0;
       store.commit("saveProjectList",state.projectList);
     },
-
-    // 模块相关操作 start
-    fetchBlockList(state) {
-      state.blockList = JSON.parse(localStorage.getItem("block_list") || '[]');
-    },
-
-    saveBlockList(state, blockList:Block[]) {
-      state.blockList = blockList;
-      localStorage.setItem("block_list", JSON.stringify(state.blockList));
-    },
-
-    addBlock(state, payload:{projectId:string,blockName:string}) {
-      store.commit("fetchBlockList");
-      const newBlock = new Block();
-      const {projectId, blockName} = payload;
-      newBlock.name = blockName;
-      newBlock.id = createId("block").toString();
-      newBlock.project_id = projectId;
-      state.blockList.push(newBlock);
-      store.commit('saveBlockList', state.blockList);
-    },
-    deleteBlock(state, payload:{blockId:string}){
-      // 删除任务
-      for(const task of state.taskList) {
-        if(task.block_id === payload.blockId) {
-          task.status = 0;
-        }
-      }
-      // 删除模块
-      store.commit("fetchBlockList");
-      const delBlock = state.blockList.find(i => i.id === payload.blockId);
-      if(delBlock) delBlock.status = 0;
-      store.commit("saveBlockList",state.blockList);
-       
-    },
-    modifyBlock(state, payload: Block) {
-      const {id, name} = payload;
-      const block = state.blockList.find(i => i.id === id);
-      if(block) block.name = name;
-      store.commit("saveBlockList", state.blockList);
-    },
-    updateCurrentProject(state, payload: Project) {
-      state.currentProjectForDialog = clone(payload);
-    }
   },
   actions: {
   },

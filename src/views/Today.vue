@@ -12,11 +12,9 @@
             <ul>
                 <li v-for="task in overdue_list" :key="task.id">
                     <TaskItem :taskId = "task.id" @edit="editTask(task.id)" />
-                    <!-- <hr /> -->
                 </li>
                 <li v-for="task in task_list" :key="task.id">
                     <TaskItem :taskId = "task.id" @edit="editTask(task.id)" v-if="showFinished?true:(task.status !== 2)" />
-                    <!-- <hr /> -->
                 </li>
             </ul>
         </div>
@@ -78,7 +76,6 @@
 
         created():void {
             this.$store.commit("fetchTaskList");
-            this.$store.commit("fetchBlockList");
         }
 
         editTask(taskId:string):void {

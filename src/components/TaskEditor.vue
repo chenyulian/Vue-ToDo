@@ -10,12 +10,12 @@
                 <el-button plain size="mini" v-popover:date-popover icon="el-icon-date">{{dueDateString}}</el-button>
                 <el-tooltip class="item" effect="dark" content="选择一个项目" placement="right">
                     <el-button plain size="mini" v-popover:section-popover>
-                        <div v-if="projectColor !== ''" 
+                        <div v-if="project.color !== ''" 
                             style="width: 8px; height: 8px; border-radius: 6px; display:inline-block; margin-right: 8px;" 
-                            :style="`backgroundColor:${projectColor}`">
+                            :style="`backgroundColor:${project.color}`">
                         </div>
                         <i v-else class="el-icon-receiving"></i>
-                        <span>{{projectFullName}}</span>
+                        <span>{{project.name}}</span>
                     </el-button>
                 </el-tooltip>
                 <el-popover
@@ -37,17 +37,12 @@
                     v-model="moreVisible"
                     >
                     <ul class="projectList">
-                        <li class="collectBox" @click="selectProject({id: '-1'})"><i class="el-icon-receiving"></i><span style="margin-left:4px;">收集箱</span></li>
-                        <li v-for="item in projectList" :key="item.project.id" @click="selectProject(item.project)">
+                        <li class="collectBox" @click="selectProject('-1')"><i class="el-icon-receiving"></i><span style="margin-left:4px;">收集箱</span></li>
+                        <li v-for="item in projectList" :key="item.id" @click="selectProject(item.id)">
                             <div class="project_container">
-                                <div :style="{backgroundColor:item.project.color}"></div>
-                                <span>{{item.project.name}}</span>
+                                <div :style="{backgroundColor:item.color}"></div>
+                                <span>{{item.name}}</span>
                             </div>
-                            <ul v-if="item.blocks" class="blockList">
-                                <li v-for="block in item.blocks" :key="block.id" @click.stop="selectBlock(block, item.project.id, item.project.color)">
-                                    {{block.name}}
-                                </li>
-                            </ul>
                         </li>
                     </ul>
                 </el-popover>
@@ -82,41 +77,28 @@
 </template>
 
 <script lang="ts">
-    import dayjs from 'dayjs';
     import Task from '@/lib/Task';
     import createId from '@/lib/createId';
     import Project from "@/lib/Project";
-    import Block from "@/lib/Block";
     import { Prop,Component } from "vue-property-decorator";
-    import { ProjectTree } from "@/custom";
     import { mixins } from "vue-class-component";
     import ProjectHelper from "@/mixins/ProjectHelper";
-    import BlockHelper from "@/mixins/BlockHelper";
+    import Utils from "@/lib/Utils";
 
     @Component
-    export default class TaskEditor extends mixins(ProjectHelper,BlockHelper){
+    export default class TaskEditor extends mixins(ProjectHelper){
         task_content = "";
         dueDate = new Date();
         visible = false;
         moreVisible = false;
         isEditing = false;        
-        _parentId!:string | null;
-        _projectId = "";
-        _blockId!:string | null;
         projectName = "";
-        blockName="";
         projectColor = "";
+        project!:Project;
 
         created():void {
             this.$store.commit("fetchProjectList");
-            this.$store.commit("fetchBlockList");
-            this._projectId = this.project_id?this.project_id:"-1";
-            this._blockId = this.block_id?this.block_id:null;
-            this._parentId = this.parent_id?this.parent_id:null;
-            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
-            this.projectName = this.getProjectById(this._projectId).name;
-            this.projectColor = this.getProjectById(this._projectId).color;
-            
+            this.project = this.getProjectById(this.project_id);
             const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
             if(task !== undefined) {
                 this.task_content = task.content;
@@ -130,50 +112,18 @@
         project_id?:string;
 
         @Prop({type:String})
-        block_id?:string;
-
-        @Prop({type:String})
-        parent_id?:string;
-
-        @Prop({type:String})
         task_id?:string;
-
-        get projectFullName():string {
-            if(this.blockName !== "" && this.blockName !== null && this.blockName !== undefined) {
-                return this.projectName + " / " + this.blockName;
-            }else{
-                return this.projectName;
-            }
-        }
         
         get dueDateString():string {   
-            if(this.dueDate === null) {
-                return "日程安排";
-            }         
-            if(dayjs(this.dueDate).isSame(dayjs(new Date()),'day')){
-                return "今天";
-            }
-            if(dayjs(this.dueDate).isSame(dayjs(new Date()).add(1,'day'),'day')){
-                return "明天";
-            }
-            if(dayjs(this.dueDate).isSame(dayjs(new Date()).add(2,'day'),'day')){
-                return "后天";
-            }
-            return dayjs(this.dueDate).format("MM-DD");
+            return Utils.formatDate(this.dueDate);
         }
 
         get addButtonAvaliable():boolean {
             return this.task_content.length <= 0;
         }
 
-        get projectList(): ProjectTree[]{
-            const projects = (this.$store.state.projectList as Project[]).filter(i => i.status === 1);
-            const blocks = (this.$store.state.blockList as Block[]).filter(i => i.status === 1);
-            const result = [] as ProjectTree[];
-            for(let p of projects) {
-                result.push({project:p, blocks:blocks.filter(i => i.project_id === p.id)});
-            }
-            return result;
+        get projectList(): Project[]{
+            return (this.$store.state.projectList as Project[]).filter(i => i.status === 1);
         }
 
         saveTask():void {
@@ -181,12 +131,8 @@
             if(this.task_id === undefined) {
                 const task = new Task();
                 task.content = this.task_content;
-                task.id = createId("task").toString();
-                if(this.parent_id) task.parent_id = this.parent_id;
-        
-                task.project_id = this._projectId;
-                task.block_id = this._blockId;
-
+                task.id = createId("task").toString();        
+                task.project_id = this.project.id;
                 task.due_date = this.dueDate===null?null:this.dueDate.toString();
                 task.status = 1;
                 // task.tags.push(this.selectedTagName);
@@ -195,10 +141,8 @@
                 const task = (this.$store.state.taskList as Task[]).find(i => i.id === this.task_id);
                 if(task) {
                     task.content = this.task_content;
-                    task.project_id = this._projectId;
-                    task.block_id = this._blockId;
+                    task.project_id = this.project.id;
                     task.due_date = this.dueDate===null?null:this.dueDate.toString();
-                    // task.tags.push(this.selectedTagName);
                     this.$store.commit('updateTask', task);
                 }
             }
@@ -206,33 +150,16 @@
             // 完成后不显示任务编辑
             this.isEditing = false;
             this.task_content = "";
-            this._projectId = this.project_id?this.project_id:"-1";
-            this._blockId = this.block_id?this.block_id:null;
-            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
-            this.projectName = this.getProjectById(this._projectId).name;
-            this.projectColor = this.getProjectById(this._projectId).color;
             this.dueDate = new Date();
             this.$emit("finish");
         }
 
-        selectProject(project: Project):void {
-            this._projectId = project.id;
-            this.projectName = this.getProjectById(this._projectId).name;
-            this.projectColor = project.color || "";
-            this._blockId = null;
-            this.blockName = "";
+        selectProject(id: string):void {
+            this.project = this.getProjectById(id);
             this.moreVisible = false;
             
         }
 
-        selectBlock(block:Block, projectId: string, color:string):void{
-            this._blockId = block.id;
-            this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
-            this._projectId = projectId;
-            this.projectName = this.getProjectById(this._projectId).name;
-            this.moreVisible = false;
-            this.projectColor = color;
-        }
 
         deleteTask(taskId:string):void {
             this.$store.commit("deleteTask",taskId);
@@ -245,14 +172,10 @@
 
        cancel():void {        
            // 清空数据
-           this.task_content = "";
-           this.dueDate = new Date();
-           this._projectId = this.project_id?this.project_id:"-1";
-           this._blockId = this.block_id?this.block_id:null;
-           this.blockName = this._blockId===null?"":this.getBlockById(this._blockId).name;
-           this.projectName = this.getProjectById(this._projectId).name;
-           this.projectColor = this.getProjectById(this._projectId).color;
-           this.$emit("cancel");
+        this.task_content = "";
+        this.dueDate = new Date();
+        this.project = this.getProjectById(this.project_id);
+        this.$emit("cancel");
        }
 
     }
@@ -271,12 +194,12 @@
 }
 
 .task_edit_container {
-        display: flex;
-        flex-direction: column;
-        min-height: 48px;
-        border-radius: 5px;
-        padding: 0 18px;
-        font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 48px;
+    border-radius: 5px;
+    padding: 0 18px;
+    font-size: 14px;
 }
 
 .content-container {
@@ -338,7 +261,7 @@
     & > li {
         display: flex;
         flex-direction: column;
-        & .blockList > li, & .project_container, &.collectBox {
+        & .project_container, &.collectBox {
             padding: 8px 16px;
             max-width: 256px;
             display: flex;
@@ -347,11 +270,6 @@
                 background:rgb(236,245,255);
                 cursor: pointer;
             }
-        }
-
-        & .blockList > li {
-            font-size: 12px;
-            padding-left: 36px;
         }
 
          &.collectBox {

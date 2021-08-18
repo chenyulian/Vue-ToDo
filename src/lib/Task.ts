@@ -4,7 +4,6 @@ export default class Task  {
     status: number; // 状态，数字和后端约定好，请求和后端存储的时候均使用数字类型
     project_id: string;// 所属项目
     parent_id: string | null;
-    block_id: string | null; // 所属块，一个项目可以有多个模块
     create_time: Date; //创建时间，前端生成的时候创建
     due_date: string | null; // 期望完成日期，可以为空（如果是重复任务）
     finishTime: Date | null; // 完成时间
@@ -18,7 +17,6 @@ export default class Task  {
        this.content = "";
        this.status = -1;
        this.project_id = "-1";
-       this.block_id = null;
        this.create_time = new Date();
        this.due_date = null;
        this.parent_id = null;

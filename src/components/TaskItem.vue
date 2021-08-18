@@ -1,6 +1,6 @@
 <template>
     <div class="task_item" :class="{isEditing: isEditing}" @dblclick="isEditing = task.status===2?false:true">
-        <task-editor :project_id="task.project_id" :block_id="task.block_id" :task_id="task.id" v-if="isEditing"
+        <task-editor :project_id="task.project_id" :task_id="task.id" v-if="isEditing"
             @cancel = "isEditing = false" @finish="isEditing = false" />
         <div class="task-container" v-else>
             <div class="task" :class="{'finished': task.status === 2}">
@@ -49,16 +49,13 @@
     import { Prop } from "vue-property-decorator";
     import dayjs from "dayjs";
     import Project from "@/lib/Project";
-    import Block from "@/lib/Block";
     import TaskEditor from "@/components/TaskEditor.vue";
+    import Utils from "@/lib/Utils";
 
     @Component({
         components: {TaskEditor}
     })
     export default class TaskItem extends Vue{
-        
-        // @Prop({required: true})
-        // task!: Task;
 
         @Prop({type:String, required: true})
         taskId!: string;
@@ -93,12 +90,8 @@
                 return "收集箱";
             }
             const projectList = this.$store.state.projectList as Project[];
-            const blockList = this.$store.state.blockList as Block[];
             const project = projectList.find(i => i.id === this.task.project_id);
-            const block = blockList.find(i => i.id === this.task.block_id);
-            if(project !== undefined && block !== undefined) {
-                return project.name + " / " + block.name;
-            } else if(project !== undefined) {
+            if(project !== undefined) {
                 return project.name;
             } else {
                 return "收集箱";
@@ -116,18 +109,7 @@
         }
         
         get taskDueDate():string {
-            if(this.task.due_date === null) return "";
-
-            if(dayjs(this.task.due_date).isSame(dayjs(new Date()),'day')){
-                return "今天";
-            }
-            if(dayjs(this.task.due_date).isSame(dayjs(new Date()).add(1,'day'),'day')){
-                return "明天";
-            }
-            if(dayjs(this.task.due_date).isSame(dayjs(new Date()).add(2,'day'),'day')){
-                return "后天";
-            }
-            return dayjs(this.task.due_date).format("MM-DD");
+            return Utils.formatDate(new Date(this.task.due_date || new Date()));
         }
 
         deleteTask(id:string):void {
