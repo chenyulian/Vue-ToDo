@@ -32,7 +32,7 @@
         </div>
         <div class="empty" v-else>
             <Icon name="empty" class="icon-empty" />
-            <div>暂时没有任务</div>
+            <div class="text">暂时没有已完成待办</div>
         </div>
     </div>
 </template>
@@ -133,20 +133,20 @@ import Project from "@/lib/Project";
 
         get projectNameList():string[] {
             const projectList = this.$store.state.projectList as Project[];
-            const taskList = this.$store.state.taskList as Task[];            
+            const taskList = this.$store.state.taskList as Task[];
+            const taskNum = taskList.filter(i => i.status === 2 && i.project_id === '-1').length;            
             let result = [];
+            if(taskNum > 0) {
+                result.push('收集箱');
+            }
             for(let p of projectList) {
                 let num = taskList.filter(item => item.project_id === p.id && item.status === 2).length;
                 if(num !== 0) {
                     result.push(p.name);
                 } 
             }   
-
-            if(result && result.length > 0) { 
-                return ['收集箱', ...result];
-            } else {
-                return ['收集箱'];
-            }
+            
+            return result;
         }
 
         
@@ -157,6 +157,9 @@ import Project from "@/lib/Project";
 
             const taskNum = taskList.filter(i => i.status === 2 && i.project_id === '-1').length;
             let result = [];
+            if(taskNum > 0) {
+                result.push({value: taskNum, name: '收集箱', itemStyle: {color: '#808CCF'}});
+            }
 
             for(let p of projectList) {
                 let num = taskList.filter(item => item.project_id === p.id && item.status === 2).length;
@@ -165,11 +168,7 @@ import Project from "@/lib/Project";
                 } 
             }
 
-            if(result && result.length > 0) {
-                return [{value: taskNum, name: '收集箱', itemStyle: {color: '#808CCF'}}, ...result]
-            } else {
-                return [{value: taskNum, name: '收集箱', itemStyle: {color: '#808CCF'}}];
-            }
+            return result;
         }
 
         option = {
@@ -299,6 +298,9 @@ $item-radius: 12px;
                 width: 320px;
                 height: 200px;
              }
+        }
+        & > .text {
+            color: $color-font-secondary;
         }
 
     }
