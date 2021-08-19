@@ -71,7 +71,7 @@ import Project from "@/lib/Project";
             const task_list = this.$store.state.taskList as Task[];            
             if(task_list && task_list.length > 0) {
                 return task_list.filter((i)=>{                    
-                    return i.finishTime && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day');
+                    return i.finishTime && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day') && i.status !== 0;
                 }).length;
             } else {
                 return 0;
@@ -82,12 +82,15 @@ import Project from "@/lib/Project";
         get taskRateYesterday():string {
             const task_list = this.$store.state.taskList as Task[];
             let taskNum = task_list.filter((i)=>{
-                    return dayjs(i.create_time).isSame(dayjs(new Date()).add(-1,'day'), 'day');
+                    if(i.due_date === null) return false;
+                    return dayjs(new Date(i.due_date)).isSame(dayjs(new Date()).add(-1,'day'), 'day') && i.status !== 0;
                 }).length;
             let finishNum = task_list.filter((i)=>{
+                    if(i.due_date === null) return false;
                     return i.finishTime 
                             && dayjs(i.finishTime).isSame(dayjs(new Date()).add(-1, 'day'), 'day') 
-                            && dayjs(i.create_time).isSame(dayjs(new Date()).add(-1, 'day'), 'day');
+                            && dayjs(new Date(i.due_date)).isSame(dayjs(new Date()).add(-1, 'day'), 'day')
+                            && i.status === 2;
             }).length;
             if (taskNum === 0) return '0';
             return ((finishNum / taskNum) * 100).toFixed(0);
@@ -102,7 +105,8 @@ import Project from "@/lib/Project";
             if(task_list && task_list.length > 0) {                
                  return task_list.filter((i)=>{
                     if (i.status === 0) return false;
-                    if (dayjs(i.create_time).isAfter(thisWeekStart.add(-1, 'day'), 'day') && dayjs(i.create_time).isBefore(thisWeekEnd))
+                    if (i.due_date === null) return false;
+                    if (dayjs(new Date(i.due_date)).isAfter(thisWeekStart.add(-1, 'day'), 'day') && dayjs(i.due_date).isBefore(thisWeekEnd))
                         return true;
                 });
             } else {
