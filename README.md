@@ -1,5 +1,8 @@
 # Vue-ToDo
 
+## 预览
+[预览地址](https://chenyulian.github.io/Vue-ToDo/dist/)
+
 ## Project setup
 ```
 yarn install
