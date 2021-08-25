@@ -1,7 +1,7 @@
 <template>
     <div class="bottom-nav">
         <ul class="bottom-nav-list">
-            <li :class="selected === 1?'selected':''" @click="select(1)"><Icon name="todo" class="icon-todo" /><div>待办</div></li>
+            <li :class="selected === 1?'selected':''" @click="select(1)"><Icon name="todo" class="icon-todo" /><span>待办</span></li>
             <li :class="selected === 2?'selected':''" @click="select(2)"><Icon name="project" class="icon-todo" />
                 <span>项目</span>
             </li>
@@ -64,6 +64,17 @@ $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
        border-right:none;
        padding: 0;
    }
+   @media (max-width: 900px) and (min-width: 501px) {
+       min-width: 30px;
+       max-width: 120px;
+        // .icon-todo {
+        //     margin-right: auto;
+        // }
+
+       .bottom-nav-list > li > span {
+           display: none;
+       }
+   }
   .nav-selected-color {
       display: none;
     position: absolute;
@@ -111,8 +122,11 @@ $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
          & .icon-todo {
             width: 1.5em;
             height: 1.5em;
-            margin-right: 100px;
         }
+
+       & > span {
+           margin-left: 100px;
+       }
 
         &.selected {
             color: #37429B;
@@ -137,9 +151,9 @@ $spacing: calc((100vw - 3 * #{$seletedWidth}) / 4);
             &.selected {
                 background:none;
             }
-             & .icon-todo {
-                margin-right: 4px;
-             }
+            & > span {
+                margin-left: 4px;
+            }
         }
     }
     

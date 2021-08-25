@@ -290,6 +290,14 @@ import Project from "@/lib/Project";
 $item-margin: 16px;
 $item-radius: 12px;
 .stats {
+    padding-top: 100px;
+    // padding-left: 24px;
+    // padding-right: 24px;
+    max-width: 746px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.stats {
     & > .empty {
         text-align: center;
         & > .icon-empty {
@@ -364,6 +372,22 @@ $item-radius: 12px;
                 }
             }
         }
+
+         @media (max-width: 900px) and (min-width: 501px) {
+            margin-right:10px;
+            & > li {
+                width:120px;
+                height: 120px;
+                margin-left: 10px;
+                &:first-child {
+                    margin-left: 0;
+                }
+                & span {
+                    font-size: 40px;
+                    line-height: 40px;
+                }
+            }
+        }
     }
 
     .week-info {
@@ -379,6 +403,11 @@ $item-radius: 12px;
             height: 120px;
             width: 220px;
             margin-top: 16px;
+        }
+
+        @media (max-width: 800px) and (min-width: 501px) {
+            height: 120px;
+            width: 200px;
         }
 
         &:hover {
