@@ -1,7 +1,7 @@
 # Vue-ToDo
 
 ## 预览
-[预览地址](https://chenyulian.github.io/Vue-ToDo/dist/)
+[预览地址](https://chenyulian.github.io/Vue-ToDo/)
 
 ## Project setup
 ```
